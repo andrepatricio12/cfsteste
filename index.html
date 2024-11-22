@@ -602,26 +602,29 @@ async function mostrarRanking() {
     });
 }
     // Função para contar alunos fora do ranking
-async function contarAlunosForaDoRanking() {
+async function atualizarContagemNaoRanking() {
     try {
-        const alunosSnapshot = await db.collection("alunos").get();
-        let totalForaRanking = 0;
+        const snapshot = await db.collection('alunos').get();
+        let countNaoRanking = 0;
 
-        alunosSnapshot.forEach((doc) => {
+        snapshot.forEach(doc => {
             const data = doc.data();
-            if (data && data.exibirNoRanking === false) {
-                totalForaRanking++;
+            if (data.showInRanking === false) {
+                countNaoRanking++;
             }
         });
 
-        // Atualiza o contador na interface
-        const contadorElement = document.getElementById("not-in-ranking-count");
-        if (contadorElement) {
-            contadorElement.textContent = totalForaRanking;
-        }
+        document.getElementById('non-ranking-count').textContent = countNaoRanking;
     } catch (error) {
-        console.error("Erro ao contar alunos fora do ranking:", error);
+        console.error('Erro ao obter dados do Firebase:', error);
     }
+}
+async function mostrarRanking() {
+    // Código existente para exibir o ranking...
+    document.getElementById('ranking-container').classList.remove('hidden');
+    
+    // Atualiza a contagem de alunos que não estão no ranking
+    await atualizarContagemNaoRanking();
 }
 
 // Atualizar a contagem após salvar ou excluir notas
