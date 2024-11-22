@@ -440,21 +440,22 @@
 
         alunosRanking.sort((a, b) => b.media - a.media);
 
-        // Exibindo como tabela
+        // Criando a tabela
         const tabela = document.createElement('div');
         tabela.style.display = 'grid';
-        tabela.style.gridTemplateColumns = '1fr 1fr 1fr';
-        tabela.style.justifyContent = 'center';
+        tabela.style.gridTemplateColumns = '2fr 1fr 1fr'; // Configuração para 3 colunas
+        tabela.style.gap = '10px'; // Espaçamento entre as colunas
+        tabela.style.textAlign = 'center'; // Centraliza os textos
         tabela.style.marginTop = '20px';
 
         // Cabeçalho
         const col1 = document.createElement('div');
-        col1.textContent = 'Número de Notas Salvas';
+        col1.textContent = 'Posição e Nome';
         col1.style.fontWeight = 'bold';
         tabela.appendChild(col1);
 
         const col2 = document.createElement('div');
-        col2.textContent = 'Posição e Nome';
+        col2.textContent = 'Número de Notas Salvas';
         col2.style.fontWeight = 'bold';
         tabela.appendChild(col2);
 
@@ -465,13 +466,14 @@
 
         // Preenchendo os dados
         alunosRanking.forEach((aluno, index) => {
+            const posicaoNome = document.createElement('div');
+            posicaoNome.textContent = `${index + 1}º - ${aluno.nome}`;
+            posicaoNome.style.whiteSpace = 'nowrap'; // Evita quebra de linha
+            tabela.appendChild(posicaoNome);
+
             const notasSalvas = document.createElement('div');
             notasSalvas.textContent = aluno.notasSalvas;
             tabela.appendChild(notasSalvas);
-
-            const posicaoNome = document.createElement('div');
-            posicaoNome.textContent = `${index + 1}º - ${aluno.nome}`;
-            tabela.appendChild(posicaoNome);
 
             const media = document.createElement('div');
             media.textContent = aluno.media.toFixed(2);
@@ -482,7 +484,6 @@
         document.getElementById('ranking-container').classList.remove('hidden');
     });
 }
-
 
     function ocultarRanking() {
         document.getElementById('ranking-container').classList.add('hidden');
