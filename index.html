@@ -125,7 +125,17 @@
         </tbody>
     </table>
     <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
+        <div id="ranking-container" class="hidden">
+    <h3>Ranking de Alunos</h3>
+    <div id="ranking-list"></div>
+    <button onclick="ocultarRanking()">Ocultar Ranking</button>
+    <p id="not-in-ranking-message" style="font-size: 12px; color: black; margin-top: 10px;">
+        <span style="color: red;" id="not-in-ranking-count">0</span> alunos cadastraram suas notas mas optaram não aparecer no ranking.
+    </p>
+
 </div>
+    </style>
+    <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
@@ -211,6 +221,7 @@
         </div>
     </div>
 </div>
+    <style>
     .ranking-table {
     width: 100%;
     border-collapse: collapse;
@@ -228,19 +239,15 @@
     color: white;
     font-weight: bold;
 }
-        <div id="ranking-container" class="hidden">
-    <h3>Ranking de Alunos</h3>
-    <div id="ranking-list"></div>
-    <button onclick="ocultarRanking()">Ocultar Ranking</button>
-    <p id="not-in-ranking-message" style="font-size: 12px; color: black; margin-top: 10px;">
-        <span style="color: red;" id="not-in-ranking-count">0</span> alunos cadastraram suas notas mas optaram não aparecer no ranking.
-    </p>
-</div>
-
 
 .ranking-table td {
     background-color: #f9f9f9;
 }
+        <style>
+    /* Outros estilos existentes */
+
+    /* Ajustar largura da coluna "Número de Notas" */
+    #<style>
     /* Ajustar largura da coluna "Número de Notas" */
     #ranking-container table th:nth-child(3),
     #ranking-container table td:nth-child(3) {
@@ -470,9 +477,7 @@
         }
     }
 }
-
-
-    async function mostrarRanking() {
+async function mostrarRanking() {
     const rankingContainer = document.getElementById("ranking-container");
     const rankingList = document.getElementById("ranking-list");
     const notInRankingCountElem = document.getElementById("not-in-ranking-count");
@@ -516,6 +521,24 @@
         console.error("Erro ao carregar o ranking:", error);
     }
 }
+
+    function mostrarRanking() {
+    db.collection("alunos").where("mostrarRanking", "==", true).get().then((querySnapshot) => {
+        let rankingList = document.getElementById('ranking-list');
+        rankingList.innerHTML = ''; // Limpa a lista antes de adicionar o ranking
+        let alunosRanking = [];
+
+        querySnapshot.forEach((doc) => {
+            const alunoData = doc.data();
+            let soma = 0;
+            let count = 0;
+
+            for (const disciplina in alunoData) {
+                if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
+                    soma += alunoData[disciplina];
+                    count++;
+                }
+            }
 
             const media = count > 0 ? soma / count : 0;
             alunosRanking.push({ nome: alunoData.nome, media, notasSalvas: count });
