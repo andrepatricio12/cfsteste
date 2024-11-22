@@ -603,6 +603,81 @@ async function mostrarRanking() {
         document.getElementById('ranking-container').classList.remove('hidden');
     });
 }
+    // Função para contar alunos fora do ranking
+async function contarAlunosForaDoRanking() {
+    try {
+        const alunosSnapshot = await db.collection("alunos").get();
+        let totalForaRanking = 0;
+
+        alunosSnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data && data.exibirNoRanking === false) {
+                totalForaRanking++;
+            }
+        });
+
+        // Atualiza o contador na interface
+        const contadorElement = document.getElementById("not-in-ranking-count");
+        if (contadorElement) {
+            contadorElement.textContent = totalForaRanking;
+        }
+    } catch (error) {
+        console.error("Erro ao contar alunos fora do ranking:", error);
+    }
+}
+
+// Atualizar a contagem após salvar ou excluir notas
+async function salvarNota() {
+    const matricula = document.getElementById("matricula").value.trim();
+    const disciplina = document.getElementById("disciplina").value;
+    const nota = parseFloat(document.getElementById("nota").value);
+
+    if (isNaN(nota) || nota < 0 || nota > 10) {
+        alert("Por favor, insira uma nota válida entre 0 e 10.");
+        return;
+    }
+
+    try {
+        await db.collection("alunos").doc(matricula).set({
+            [disciplina]: nota,
+            exibirNoRanking: document.getElementById("showInRankingCheckbox").checked,
+        }, { merge: true });
+
+        alert("Nota salva com sucesso!");
+        contarAlunosForaDoRanking(); // Atualiza a contagem
+    } catch (error) {
+        console.error("Erro ao salvar nota:", error);
+    }
+}
+
+async function excluirNota() {
+    const matricula = document.getElementById("matricula").value.trim();
+    const disciplina = document.getElementById("disciplina").value;
+
+    try {
+        const alunoRef = db.collection("alunos").doc(matricula);
+        const alunoDoc = await alunoRef.get();
+
+        if (alunoDoc.exists) {
+            const alunoData = alunoDoc.data();
+            delete alunoData[disciplina];
+
+            await alunoRef.set(alunoData);
+            alert("Nota excluída com sucesso!");
+            contarAlunosForaDoRanking(); // Atualiza a contagem
+        } else {
+            alert("Nenhum dado encontrado para excluir.");
+        }
+    } catch (error) {
+        console.error("Erro ao excluir nota:", error);
+    }
+}
+
+// Chama a função ao carregar a página
+document.addEventListener("DOMContentLoaded", () => {
+    contarAlunosForaDoRanking();
+});
+
 
 
 
