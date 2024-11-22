@@ -239,41 +239,31 @@
 .ranking-table td {
     background-color: #f9f9f9;
 }
-        <style>
 
-    /* Ajustar largura da coluna "Número de Notas" */
-    #ranking-container table th:nth-child(3),
-    #ranking-container table td:nth-child(3) {
-        width: 80px; /* Menor largura para a coluna "Número de Notas" */
-        text-align: center;
-    }
+#ranking-container table th:nth-child(3),
+#ranking-container table td:nth-child(3) {
+    width: 80px; /* Largura ajustada para a coluna "Número de Notas" */
+    text-align: center;
+}
 
-    /* Ajustar largura da coluna "Nome" */
-    #ranking-container table th:nth-child(2),
-    #ranking-container table td:nth-child(2) {
-        width: auto; /* Largura ajustável para o nome */
-        white-space: nowrap; /* Impede a quebra de linha */
-        text-align: left;
-    }
+#ranking-container table th:nth-child(2),
+#ranking-container table td:nth-child(2) {
+    width: auto;
+    white-space: nowrap;
+    text-align: left;
+}
 
-    /* Outras colunas */
-    #ranking-container table th:nth-child(1),
-    #ranking-container table td:nth-child(1),
-    #ranking-container table th:nth-child(4),
-    #ranking-container table td:nth-child(4) {
-        text-align: center;
-    }
-     
-    #ranking-container button {
-        margin-top: 20px;
-    }
-
+#ranking-container table th:nth-child(1),
+#ranking-container table td:nth-child(1),
+#ranking-container table th:nth-child(4),
+#ranking-container table td:nth-child(4) {
+    text-align: center;
+}
 
 #ranking-container button {
     margin-top: 20px;
 }
 
-</style>
 
 <script>
     // Configuração do Firebase
@@ -559,6 +549,7 @@
 
         document.getElementById('ranking-container').classList.remove('hidden');
     });
+
 }
 
 
