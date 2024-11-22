@@ -92,66 +92,53 @@
             color: green;
         }
         #notas-salvas {
-            margin-top: 20px;
-            max-height: 300px; /* Defina a altura máxima que você deseja */
-            overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
-            padding-right: 15px; /* Espaçamento para a barra de rolagem */
+    margin-top: 20px;
+    max-height: 300px; /* Defina a altura máxima que você deseja */
+    overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
+    padding-right: 15px; /* Espaçamento para a barra de rolagem */
+}
+
+#notas-salvas ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#notas-salvas li {
+    background-color: #f0f0f0;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 5px;
+}
         }
-        #notas-salvas ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        #notas-salvas li {
-            background-color: #f0f0f0;
-            margin-bottom: 5px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .ranking-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .ranking-table th, .ranking-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        .ranking-table th {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-        .ranking-table td {
-            background-color: #f9f9f9;
-        }
-        #ranking-container table th:nth-child(3),
-        #ranking-container table td:nth-child(3) {
-            width: 80px; /* Largura ajustada para a coluna "Número de Notas" */
-            text-align: center;
-        }
-        #ranking-container table th:nth-child(2),
-        #ranking-container table td:nth-child(2) {
-            width: auto;
-            white-space: nowrap;
-            text-align: left;
-        }
-        #ranking-container table th:nth-child(1),
-        #ranking-container table td:nth-child(1),
-        #ranking-container table th:nth-child(4),
-        #ranking-container table td:nth-child(4) {
-            text-align: center;
-        }
-        #ranking-container button {
-            margin-top: 20px;
-        }
+        <div class="message hidden" id="ranking-container">
+    <h3>Ranking de Alunos</h3>
+    <table id="ranking-table">
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>Nº de Notas</th>
+                <th>Média</th>
+            </tr>
+        </thead>
+        <tbody id="ranking-body">
+        </tbody>
+    </table>
+    <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
+</div>
+        <div id="non-ranking-info" style="font-size: smaller; color: black; margin-top: 10px;">
+    <span style="color: red;" id="non-ranking-count">0</span> alunos cadastraram suas notas mas optaram não aparecer no ranking.
+</div>
+
     </style>
+    <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div class="container">
     <h1>Sistema de Notas - Curso de Sargentos</h1>
+
     <div id="login-form">
         <div class="form-group">
             <label for="matricula">Digite sua matrícula:</label>
@@ -169,7 +156,26 @@
             <select id="disciplina" onchange="atualizarCampoNota()">
                 <!-- Lista das disciplinas -->
                 <option value="ADP">Administração de Pessoal (ADP)</option>
-                <!-- Outras opções -->
+                <option value="ALF">Administração Logística Financeira (ALF)</option>
+                <option value="AMTP">Armamento, Munição e Tiro Policial (AMTP)</option>
+                <option value="APHT">Atendimento Pré-Hospitalar Tático (APH)</option>
+                <option value="CCL">Comando Chefia e Liderança (CCL)</option>
+                <option value="DPE">Defesa Pessoal Policial (DPE)</option>
+                <option value="DAD">Direito Administrativo Disciplinar (DAD)</option>
+                <option value="DPPM">Direito Penal Militar, Processual Penal Militar (DPPM)</option>
+                <option value="EFPM">Educação Física Policial Militar (EFPM)</option>
+                <option value="DDPH">Ética e Direitos Humanos na Atividade Policial (DDPH)</option>
+                <option value="GAO">Gerenciamento de Atividade Operacional (GAO)</option>
+                <option value="INP">Inteligência Policial (INP)</option>
+                <option value="LET">Legislação de Trânsito e Operações (LET)</option>
+                <option value="LEI">Legislação Institucional (LEI)</option>
+                <option value="OUD">Ordem Unida (OUD)</option>
+                <option value="POC">Polícia de Proximidade (POC)</option>
+                <option value="POS">Polícia Ostensiva (POS)</option>
+                <option value="SCOH">Sistema de Comando e Operações de Ajuda Humanitária (SCOH)</option>
+                <option value="TPO">Técnicas E Operações De Polícia Militar (TPO)</option>
+                <option value="TSP">Técnicas de sobrevivência Policial (TSP)</option>
+                <option value="TELA">Tópicos Especiais de Legislação Aplicáveis à Atividade (TELA)</option>
             </select>
         </div>
 
@@ -211,10 +217,79 @@
         </div>
     </div>
 </div>
+    <style>
+    .ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.ranking-table th, .ranking-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.ranking-table th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+.ranking-table td {
+    background-color: #f9f9f9;
+}
+        <style>
+    /* Outros estilos existentes */
+
+    /* Ajustar largura da coluna "Número de Notas" */
+    #<style>
+    /* Ajustar largura da coluna "Número de Notas" */
+    #ranking-container table th:nth-child(3),
+    #ranking-container table td:nth-child(3) {
+        width: 80px; /* Menor largura para a coluna "Número de Notas" */
+        text-align: center;
+    }
+
+    /* Ajustar largura da coluna "Nome" */
+    #ranking-container table th:nth-child(2),
+    #ranking-container table td:nth-child(2) {
+        width: auto; /* Largura ajustável para o nome */
+        white-space: nowrap; /* Impede a quebra de linha */
+        text-align: left;
+    }
+
+    /* Outras colunas */
+    #ranking-container table th:nth-child(1),
+    #ranking-container table td:nth-child(1),
+    #ranking-container table th:nth-child(4),
+    #ranking-container table td:nth-child(4) {
+        text-align: center;
+    }
+
+    #ranking-container button {
+        margin-top: 20px;
+    }
+
+
+#ranking-container button {
+    margin-top: 20px;
+}
+        #non-ranking-info {
+    font-size: smaller;
+    color: black;
+    text-align: center;
+    margin-top: 10px;
+}
+
+#non-ranking-info span {
+    color: red;
+}
+
+
+</style>
 
 <script>
-    const firebaseConfig = {
-        
     // Configuração do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDEvCDdX0LGjDMFpyxljj-4JTjZKtgooDM",
@@ -358,9 +433,6 @@
         }
     }); // <<< Remova qualquer chave extra aqui
 }
-    function calcularAlunosNaoRanking() {
-        return alunos.filter(aluno => !aluno.apareceuNoRanking).length;
-    }
 
 
     function atualizarCampoNota() {
@@ -430,6 +502,10 @@
                     soma += alunoData[disciplina];
                     count++;
                 }
+                document.getElementById('ranking-container').classList.remove('hidden');
+    
+    // Atualiza a contagem de alunos que não estão no ranking
+    await atualizarContagemNaoRanking();
             }
 
             const media = count > 0 ? soma / count : 0;
@@ -494,22 +570,30 @@
 
         document.getElementById('ranking-container').classList.remove('hidden');
     });
-
 }
 
+async function atualizarContagemNaoRanking() {
+    try {
+        const snapshot = await db.collection('alunos').get();
+        let countNaoRanking = 0;
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.showInRanking === false) {
+                countNaoRanking++;
+            }
+        });
+
+        document.getElementById('non-ranking-count').textContent = countNaoRanking;
+    } catch (error) {
+        console.error('Erro ao obter dados do Firebase:', error);
+    }
+}
 
 
     function ocultarRanking() {
         document.getElementById('ranking-container').classList.add('hidden');
     }
-    function atualizarMensagem() {
-        let numeroAlunosNaoRanking = calcularAlunosNaoRanking();
-        let mensagem = `${numeroAlunosNaoRanking} alunos cadastraram suas notas e optaram por não aparecer no ranking.`;
-        document.getElementById('message').textContent = mensagem;
-    }
-
-    // Chamar a função para atualizar a mensagem
-    atualizarMensagem();
 </script>
 </body>
 </html>
