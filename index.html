@@ -235,6 +235,25 @@
 .ranking-table td {
     background-color: #f9f9f9;
 }
+        <style>
+    /* Outros estilos existentes */
+
+    /* Ajustar largura da coluna "Número de Notas" */
+    #ranking-container table th:nth-child(2),
+    #ranking-container table td:nth-child(2) {
+        width: 100px;
+        text-align: center;
+    }
+
+    /* Ajustar largura da coluna "Nome" */
+    #ranking-container table th:nth-child(1),
+    #ranking-container table td:nth-child(1) {
+        width: auto;
+        white-space: nowrap;
+        text-align: left;
+    }
+</style>
+
 #ranking-container button {
     margin-top: 20px;
 }
