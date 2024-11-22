@@ -236,7 +236,6 @@
     background-color: #f9f9f9;
 }
         <style>
-    /* Outros estilos existentes */
 
     /* Ajustar largura da coluna "Número de Notas" */
     #<style>
@@ -262,15 +261,20 @@
     #ranking-container table td:nth-child(4) {
         text-align: center;
     }
+        <div class="message hidden" id="ranking-container">
+    <h3>Ranking de Alunos</h3>
+    <div id="ranking-list"></div>
+    <p id="nao-no-ranking" style="font-size: 12px; color: black;">
+        <span style="color: red;" id="naoNoRankingCount">0</span> alunos cadastraram suas notas, mas optaram por não aparecer no ranking.
+    </p>
+    <button onclick="ocultarRanking()">Ocultar Ranking</button>
+</div>
+
 
     #ranking-container button {
         margin-top: 20px;
     }
-
-
-#ranking-container button {
-    margin-top: 20px;
-}
+        
 
 </style>
 
@@ -494,6 +498,14 @@
         });
 
         alunosRanking.sort((a, b) => b.media - a.media);
+         // Atualiza a contagem de alunos fora do ranking
+        await atualizarNaoNoRanking();
+
+        document.getElementById("ranking-container").classList.remove("hidden");
+    } catch (error) {
+        console.error("Erro ao exibir o ranking:", error);
+    }
+}
 
         // Criando a tabela com as colunas separadas
         const tabela = document.createElement('table');
@@ -551,6 +563,26 @@
 
         document.getElementById('ranking-container').classList.remove('hidden');
     });
+}
+async function atualizarNaoNoRanking() {
+    try {
+        // Recupera todos os documentos da coleção "notas"
+        const querySnapshot = await db.collection("notas").get();
+
+        // Conta os alunos com showInRanking definido como "false"
+        let countNaoNoRanking = 0;
+        querySnapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.showInRanking === false) {
+                countNaoNoRanking++;
+            }
+        });
+
+        // Atualiza o número no HTML
+        document.getElementById("naoNoRankingCount").textContent = countNaoNoRanking;
+    } catch (error) {
+        console.error("Erro ao contar alunos que não estão no ranking:", error);
+    }
 }
 
 
