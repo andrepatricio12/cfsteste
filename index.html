@@ -110,6 +110,22 @@
     border-radius: 5px;
 }
         }
+        <div class="message hidden" id="ranking-container">
+    <h3>Ranking de Alunos</h3>
+    <table id="ranking-table">
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>Nº de Notas Salvas</th>
+                <th>Média</th>
+            </tr>
+        </thead>
+        <tbody id="ranking-body">
+        </tbody>
+    </table>
+    <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
+</div>
     </style>
     <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -199,24 +215,53 @@
 </div>
     <style>
     /* Estilo da tabela centralizada */
-    .ranking-table {
-        width: 100%;
-        margin: 20px auto;
-        text-align: center;
-        border-spacing: 15px;
-    }
-    .ranking-table th, .ranking-table td {
-        padding: 10px;
-    }
-    .ranking-table th {
-        background-color: #007bff;
-        color: white;
-        border-radius: 5px;
-    }
-    .ranking-table td {
-        background-color: #f0f0f0;
-        border-radius: 5px;
-    }
+   /* Estilização da tabela de ranking */
+#ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+
+#ranking-table th,
+#ranking-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+#ranking-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+#ranking-table tr:last-child td {
+    border-bottom: none; /* Remove a linha inferior da última célula */
+}
+
+#ranking-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+#hide-ranking-button {
+    margin-top: 20px; /* Adiciona o espaçamento abaixo da tabela */
+    display: block;
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#hide-ranking-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
 </style>
 
 <script>
@@ -418,8 +463,9 @@
 
     function mostrarRanking() {
     db.collection("alunos").where("mostrarRanking", "==", true).get().then((querySnapshot) => {
-        let rankingList = document.getElementById('ranking-list');
-        rankingList.innerHTML = ''; // Limpa a lista antes de adicionar o ranking
+        const rankingBody = document.getElementById('ranking-body');
+        rankingBody.innerHTML = ''; // Limpa a tabela antes de adicionar as linhas
+
         let alunosRanking = [];
 
         querySnapshot.forEach((doc) => {
@@ -435,55 +481,41 @@
             }
 
             const media = count > 0 ? soma / count : 0;
-            alunosRanking.push({ nome: alunoData.nome, media, notasSalvas: count });
+            alunosRanking.push({ nome: alunoData.nome, notasSalvas: count, media });
         });
 
         alunosRanking.sort((a, b) => b.media - a.media);
 
-        // Criando a tabela
-        const tabela = document.createElement('div');
-        tabela.style.display = 'grid';
-        tabela.style.gridTemplateColumns = '2fr 1fr 1fr'; // Configuração para 3 colunas
-        tabela.style.gap = '10px'; // Espaçamento entre as colunas
-        tabela.style.textAlign = 'center'; // Centraliza os textos
-        tabela.style.marginTop = '20px';
-
-        // Cabeçalho
-        const col1 = document.createElement('div');
-        col1.textContent = 'Posição e Nome';
-        col1.style.fontWeight = 'bold';
-        tabela.appendChild(col1);
-
-        const col2 = document.createElement('div');
-        col2.textContent = 'Número de Notas Salvas';
-        col2.style.fontWeight = 'bold';
-        tabela.appendChild(col2);
-
-        const col3 = document.createElement('div');
-        col3.textContent = 'Média';
-        col3.style.fontWeight = 'bold';
-        tabela.appendChild(col3);
-
-        // Preenchendo os dados
         alunosRanking.forEach((aluno, index) => {
-            const posicaoNome = document.createElement('div');
-            posicaoNome.textContent = `${index + 1}º - ${aluno.nome}`;
-            posicaoNome.style.whiteSpace = 'nowrap'; // Evita quebra de linha
-            tabela.appendChild(posicaoNome);
+            const row = document.createElement('tr');
 
-            const notasSalvas = document.createElement('div');
-            notasSalvas.textContent = aluno.notasSalvas;
-            tabela.appendChild(notasSalvas);
+            // Coluna Posição
+            const posCell = document.createElement('td');
+            posCell.textContent = index + 1;
+            row.appendChild(posCell);
 
-            const media = document.createElement('div');
-            media.textContent = aluno.media.toFixed(2);
-            tabela.appendChild(media);
+            // Coluna Nome
+            const nomeCell = document.createElement('td');
+            nomeCell.textContent = aluno.nome;
+            row.appendChild(nomeCell);
+
+            // Coluna Nº de Notas
+            const notasCell = document.createElement('td');
+            notasCell.textContent = aluno.notasSalvas;
+            row.appendChild(notasCell);
+
+            // Coluna Média
+            const mediaCell = document.createElement('td');
+            mediaCell.textContent = aluno.media.toFixed(2);
+            row.appendChild(mediaCell);
+
+            rankingBody.appendChild(row);
         });
 
-        rankingList.appendChild(tabela);
         document.getElementById('ranking-container').classList.remove('hidden');
     });
 }
+
 
     function ocultarRanking() {
         document.getElementById('ranking-container').classList.add('hidden');
