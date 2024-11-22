@@ -262,6 +262,9 @@
     #ranking-container table td:nth-child(4) {
         text-align: center;
     }
+        <div id="message" style="text-align: center; margin-top: 20px; font-size: 14px; color: #555;">
+    <!-- A mensagem será preenchida dinamicamente via JavaScript -->
+</div>
 
     #ranking-container button {
         margin-top: 20px;
@@ -330,7 +333,11 @@
     let matriculaAtual = "";
     let nomeAlunoAtual = "";
     let notasSalvas = {};
-
+ let alunos = [
+        { nome: 'João', apareceuNoRanking: true },
+        { nome: 'Maria', apareceuNoRanking: false },
+        { nome: 'Pedro', apareceuNoRanking: true },
+        { nome: 'Ana', apareceuNoRanking: false }
     function login() {
         const matriculaInput = document.getElementById('matricula').value;
         if (alunos[matriculaInput]) {
@@ -418,6 +425,9 @@
         }
     }); // <<< Remova qualquer chave extra aqui
 }
+    function calcularAlunosNaoRanking() {
+        return alunos.filter(aluno => !aluno.apareceuNoRanking).length;
+    }
 
 
     function atualizarCampoNota() {
@@ -558,6 +568,14 @@
     function ocultarRanking() {
         document.getElementById('ranking-container').classList.add('hidden');
     }
+    function atualizarMensagem() {
+        let numeroAlunosNaoRanking = calcularAlunosNaoRanking();
+        let mensagem = `${numeroAlunosNaoRanking} alunos cadastraram suas notas e optaram por não aparecer no ranking.`;
+        document.getElementById('message').textContent = mensagem;
+    }
+
+    // Chamar a função para atualizar a mensagem
+    atualizarMensagem();
 </script>
 </body>
 </html>
