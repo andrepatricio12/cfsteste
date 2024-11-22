@@ -4,33 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Notas - Curso de Sargentos</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link para o arquivo CSS externo -->
-</head>
-<body>
-    <div class="container">
-        <h1>Sistema de Notas - Curso de Sargentos</h1>
+    <style>
+        /* Estilos gerais */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+        }
+        .form-group input, .form-group select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+        }
+        .hidden {
+            display: none;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .button-small {
+            width: 48%;
+        }
+        .spacing {
+            margin-top: 10px;
+        }
+        .message span {
+            font-weight: bold;
+        }
+        /* Estilos do checkbox e ranking */
+        #rankingButton {
+            opacity: 0.5;
+        }
+        #rankingCheckboxAlert {
+            color: green;
+        }
+        #notas-salvas {
+    margin-top: 20px;
+    max-height: 300px; /* Defina a altura máxima que você deseja */
+    overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
+    padding-right: 15px; /* Espaçamento para a barra de rolagem */
+}
 
-        <div id="login-form">
-            <div class="form-group">
-                <label for="matricula">Digite sua matrícula:</label>
-                <input type="text" id="matricula" placeholder="Digite sua matrícula">
-            </div>
-            <button onclick="login()">Entrar</button>
-            <div id="login-error" class="error hidden">Matrícula não encontrada. Por favor, tente novamente.</div>
-        </div>
+#notas-salvas ul {
+    list-style-type: none;
+    padding-left: 0;
+}
 
-        <div id="notas-form" class="hidden">
-            <h2 id="aluno-nome"></h2>
-            <!-- Demais campos de disciplina, nota e ranking -->
-        </div>
-    </div>
-
+#notas-salvas li {
+    background-color: #f0f0f0;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 5px;
+}
+        }
+        <div class="message hidden" id="ranking-container">
+    <h3>Ranking de Alunos</h3>
+    <table id="ranking-table">
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>Nº de Notas</th>
+                <th>Média</th>
+            </tr>
+        </thead>
+        <tbody id="ranking-body">
+        </tbody>
+    </table>
+    <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
+</div>
+    </style>
+    <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="script.js"></script> <!-- Link para o arquivo JavaScript externo -->
-</body>
-</html>
-
+</head>
 <body>
 <div class="container">
     <h1>Sistema de Notas - Curso de Sargentos</h1>
@@ -131,11 +231,21 @@
     color: white;
     font-weight: bold;
 }
+        <div id="ranking-container" class="hidden">
+    <h3>Ranking de Alunos</h3>
+    <div id="ranking-list"></div>
+    <button onclick="ocultarRanking()">Ocultar Ranking</button>
+    <p id="not-in-ranking-message" style="font-size: 12px; color: black; margin-top: 10px;">
+        <span style="color: red;" id="not-in-ranking-count">0</span> alunos cadastraram suas notas mas optaram não aparecer no ranking.
+    </p>
+</div>
+
 
 .ranking-table td {
     background-color: #f9f9f9;
 }
         <style>
+    /* Outros estilos existentes */
 
     /* Ajustar largura da coluna "Número de Notas" */
     #<style>
@@ -161,20 +271,15 @@
     #ranking-container table td:nth-child(4) {
         text-align: center;
     }
-        <div class="message hidden" id="ranking-container">
-    <h3>Ranking de Alunos</h3>
-    <div id="ranking-list"></div>
-    <p id="nao-no-ranking" style="font-size: 12px; color: black;">
-        <span style="color: red;" id="naoNoRankingCount">0</span> alunos cadastraram suas notas, mas optaram por não aparecer no ranking.
-    </p>
-    <button onclick="ocultarRanking()">Ocultar Ranking</button>
-</div>
-
 
     #ranking-container button {
         margin-top: 20px;
     }
-        
+
+
+#ranking-container button {
+    margin-top: 20px;
+}
 
 </style>
 
@@ -375,37 +480,56 @@
 }
 
 
-    function mostrarRanking() {
-    db.collection("alunos").where("mostrarRanking", "==", true).get().then((querySnapshot) => {
-        let rankingList = document.getElementById('ranking-list');
-        rankingList.innerHTML = ''; // Limpa a lista antes de adicionar o ranking
-        let alunosRanking = [];
+    async function mostrarRanking() {
+    const rankingContainer = document.getElementById("ranking-container");
+    const rankingList = document.getElementById("ranking-list");
+    const notInRankingCountElem = document.getElementById("not-in-ranking-count");
+
+    rankingList.innerHTML = ""; // Limpar lista antes de exibir novamente
+    rankingContainer.classList.remove("hidden");
+
+    try {
+        const querySnapshot = await db.collection("alunos").get();
+        const alunos = [];
+        let notInRankingCount = 0;
 
         querySnapshot.forEach((doc) => {
-            const alunoData = doc.data();
-            let soma = 0;
-            let count = 0;
-
-            for (const disciplina in alunoData) {
-                if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
-                    soma += alunoData[disciplina];
-                    count++;
-                }
+            const data = doc.data();
+            if (data.showInRanking) {
+                alunos.push({
+                    nome: data.nome,
+                    media: calcularMedia(data.notas),
+                    notasCount: data.notas.length || 0,
+                });
+            } else {
+                notInRankingCount++; // Contar alunos que não aparecem no ranking
             }
+        });
+
+        // Atualizar a contagem no HTML
+        notInRankingCountElem.textContent = notInRankingCount;
+
+        // Ordenar os alunos por média decrescente
+        alunos.sort((a, b) => b.media - a.media);
+
+        // Renderizar o ranking
+        alunos.forEach((aluno, index) => {
+            const alunoItem = `
+                <div>
+                    <span><b>${index + 1}.</b> ${aluno.nome} - Média: ${aluno.media.toFixed(2)} (${aluno.notasCount} notas)</span>
+                </div>`;
+            rankingList.innerHTML += alunoItem;
+        });
+    } catch (error) {
+        console.error("Erro ao carregar o ranking:", error);
+    }
+}
 
             const media = count > 0 ? soma / count : 0;
             alunosRanking.push({ nome: alunoData.nome, media, notasSalvas: count });
         });
 
         alunosRanking.sort((a, b) => b.media - a.media);
-         // Atualiza a contagem de alunos fora do ranking
-        await atualizarNaoNoRanking();
-
-        document.getElementById("ranking-container").classList.remove("hidden");
-    } catch (error) {
-        console.error("Erro ao exibir o ranking:", error);
-    }
-}
 
         // Criando a tabela com as colunas separadas
         const tabela = document.createElement('table');
@@ -463,26 +587,6 @@
 
         document.getElementById('ranking-container').classList.remove('hidden');
     });
-}
-async function atualizarNaoNoRanking() {
-    try {
-        // Recupera todos os documentos da coleção "notas"
-        const querySnapshot = await db.collection("notas").get();
-
-        // Conta os alunos com showInRanking definido como "false"
-        let countNaoNoRanking = 0;
-        querySnapshot.forEach(doc => {
-            const data = doc.data();
-            if (data.showInRanking === false) {
-                countNaoNoRanking++;
-            }
-        });
-
-        // Atualiza o número no HTML
-        document.getElementById("naoNoRankingCount").textContent = countNaoNoRanking;
-    } catch (error) {
-        console.error("Erro ao contar alunos que não estão no ranking:", error);
-    }
 }
 
 
