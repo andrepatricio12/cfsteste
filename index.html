@@ -563,26 +563,37 @@
 }
 
     // Função para buscar e contar os alunos que optaram por NÃO aparecer no ranking
+// Função para contar pessoas que não querem aparecer no ranking
 async function contarNaoExibirRanking() {
     try {
-        const db = firebase.firestore(); // Conexão com Firestore
-        const alunosSnapshot = await db.collection("alunos").get(); // Busca todos os alunos
+        const db = firebase.firestore(); // Certifique-se de que o Firebase foi inicializado antes
+        const alunosSnapshot = await db.collection("alunos").get();
         let naoExibir = 0;
 
-        // Itera por cada documento (aluno)
         alunosSnapshot.forEach((doc) => {
             const alunoData = doc.data();
             if (alunoData.mostrarRanking === false) {
-                naoExibir++; // Conta os que optaram por não exibir
+                naoExibir++;
             }
         });
 
         console.log(`Número de pessoas que optaram por NÃO aparecer no ranking: ${naoExibir}`);
-        document.getElementById("contadorNaoExibir").innerText = naoExibir; // Exibe na página
+        const contadorElement = document.getElementById("contadorNaoExibir");
+
+        // Verifica se o elemento existe antes de tentar modificá-lo
+        if (contadorElement) {
+            contadorElement.innerText = naoExibir;
+        }
     } catch (error) {
         console.error("Erro ao contar pessoas que não querem aparecer no ranking:", error);
     }
 }
+
+// Garante que a função seja executada após o carregamento completo da página
+document.addEventListener("DOMContentLoaded", () => {
+    contarNaoExibirRanking();
+});
+
 
 
 // Função para exibir a mensagem na interface
