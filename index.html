@@ -125,12 +125,6 @@
         </tbody>
     </table>
     <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
-        <div id="ranking-container" class="hidden">
-        
-    <p id="not-in-ranking-message" style="font-size: 12px; color: black; margin-top: 10px;">
-        <span style="color: red;" id="not-in-ranking-count">0</span> alunos cadastraram suas notas mas optaram não aparecer no ranking.
-    </p>
-
 </div>
     </style>
     <!-- Firebase SDK (compatível com navegadores) -->
@@ -268,6 +262,11 @@
     #ranking-container table td:nth-child(4) {
         text-align: center;
     }
+        <div id="ranking-container">
+    <!-- Ranking já existente -->
+    <div id="mensagem-nao-exibidos" style="margin-top: 10px; font-size: small;"></div>
+</div>
+
 
     #ranking-container button {
         margin-top: 20px;
@@ -475,50 +474,7 @@
         }
     }
 }
-async function mostrarRanking() {
-    const rankingContainer = document.getElementById("ranking-container");
-    const rankingList = document.getElementById("ranking-list");
-    const notInRankingCountElem = document.getElementById("not-in-ranking-count");
 
-    rankingList.innerHTML = ""; // Limpar lista antes de exibir novamente
-    rankingContainer.classList.remove("hidden");
-
-    try {
-        const querySnapshot = await db.collection("alunos").get();
-        const alunos = [];
-        let notInRankingCount = 0;
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            if (data.showInRanking) {
-                alunos.push({
-                    nome: data.nome,
-                    media: calcularMedia(data.notas),
-                    notasCount: data.notas.length || 0,
-                });
-            } else {
-                notInRankingCount++; // Contar alunos que não aparecem no ranking
-            }
-        });
-
-        // Atualizar a contagem no HTML
-        notInRankingCountElem.textContent = notInRankingCount;
-
-        // Ordenar os alunos por média decrescente
-        alunos.sort((a, b) => b.media - a.media);
-
-        // Renderizar o ranking
-        alunos.forEach((aluno, index) => {
-            const alunoItem = `
-                <div>
-                    <span><b>${index + 1}.</b> ${aluno.nome} - Média: ${aluno.media.toFixed(2)} (${aluno.notasCount} notas)</span>
-                </div>`;
-            rankingList.innerHTML += alunoItem;
-        });
-    } catch (error) {
-        console.error("Erro ao carregar o ranking:", error);
-    }
-}
 
     function mostrarRanking() {
     db.collection("alunos").where("mostrarRanking", "==", true).get().then((querySnapshot) => {
@@ -601,83 +557,40 @@ async function mostrarRanking() {
         document.getElementById('ranking-container').classList.remove('hidden');
     });
 }
-    // Função para contar alunos fora do ranking
-async function atualizarContagemNaoRanking() {
-    try {
-        const snapshot = await db.collection('alunos').get();
-        let countNaoRanking = 0;
+    function atualizarRanking() {
+    // Código para gerar o ranking
+    gerarRanking(); 
 
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            if (data.showInRanking === false) {
-                countNaoRanking++;
-            }
-        });
-
-        document.getElementById('non-ranking-count').textContent = countNaoRanking;
-    } catch (error) {
-        console.error('Erro ao obter dados do Firebase:', error);
-    }
-}
-async function mostrarRanking() {
-    // Código existente para exibir o ranking...
-    document.getElementById('ranking-container').classList.remove('hidden');
-    
-    // Atualiza a contagem de alunos que não estão no ranking
-    await atualizarContagemNaoRanking();
+    // Atualizar a contagem dos que não aparecem no ranking
+    contarNaoExibidos();
 }
 
-// Atualizar a contagem após salvar ou excluir notas
-async function salvarNota() {
-    const matricula = document.getElementById("matricula").value.trim();
-    const disciplina = document.getElementById("disciplina").value;
-    const nota = parseFloat(document.getElementById("nota").value);
-
-    if (isNaN(nota) || nota < 0 || nota > 10) {
-        alert("Por favor, insira uma nota válida entre 0 e 10.");
-        return;
-    }
-
+    // Função para buscar e contar os alunos que optaram por NÃO aparecer no ranking
+async function contarNaoExibidos() {
     try {
-        await db.collection("alunos").doc(matricula).set({
-            [disciplina]: nota,
-            exibirNoRanking: document.getElementById("showInRankingCheckbox").checked,
-        }, { merge: true });
+        const alunosRef = firebase.firestore().collection('alunos');
+        const snapshot = await alunosRef.where('exibirNoRanking', '==', false).get();
 
-        alert("Nota salva com sucesso!");
-        contarAlunosForaDoRanking(); // Atualiza a contagem
-    } catch (error) {
-        console.error("Erro ao salvar nota:", error);
-    }
-}
-
-async function excluirNota() {
-    const matricula = document.getElementById("matricula").value.trim();
-    const disciplina = document.getElementById("disciplina").value;
-
-    try {
-        const alunoRef = db.collection("alunos").doc(matricula);
-        const alunoDoc = await alunoRef.get();
-
-        if (alunoDoc.exists) {
-            const alunoData = alunoDoc.data();
-            delete alunoData[disciplina];
-
-            await alunoRef.set(alunoData);
-            alert("Nota excluída com sucesso!");
-            contarAlunosForaDoRanking(); // Atualiza a contagem
+        if (!snapshot.empty) {
+            const naoExibidos = snapshot.size; // Conta os documentos encontrados
+            exibirMensagemNaoExibidos(naoExibidos);
         } else {
-            alert("Nenhum dado encontrado para excluir.");
+            exibirMensagemNaoExibidos(0); // Nenhum aluno marcou 'não exibir'
         }
     } catch (error) {
-        console.error("Erro ao excluir nota:", error);
+        console.error("Erro ao buscar alunos que não exibem no ranking:", error);
     }
 }
 
-// Chama a função ao carregar a página
-document.addEventListener("DOMContentLoaded", () => {
-    contarAlunosForaDoRanking();
-});
+// Função para exibir a mensagem na interface
+function exibirMensagemNaoExibidos(naoExibidos) {
+    const mensagemContainer = document.getElementById('mensagem-nao-exibidos');
+    mensagemContainer.innerHTML = `
+        <span>Alunos que optaram por <b>não</b> aparecer no ranking: 
+            <span style="color: red; font-size: smaller;">${naoExibidos}</span>
+        </span>
+    `;
+}
 
 
 
