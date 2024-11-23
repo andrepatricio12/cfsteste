@@ -208,6 +208,11 @@
     <!-- Ranking já existente -->
     <div id="mensagem-nao-exibidos" style="margin-top: 10px; font-size: small;"></div>
 </div>
+            <div>
+    <h3>Pessoas que cadastraram as notas mas optaram por não aparecer no ranking:</h3>
+    <p id="contadorNaoExibir">0</p>
+</div>
+
             <button onclick="ocultarRanking()">Ocultar Ranking</button>
         </div>
 
@@ -567,21 +572,27 @@
 }
 
     // Função para buscar e contar os alunos que optaram por NÃO aparecer no ranking
-async function contarNaoExibidos() {
+async function contarNaoExibirRanking() {
     try {
-        const alunosRef = firebase.firestore().collection('alunos');
-        const snapshot = await alunosRef.where('exibirNoRanking', '==', false).get();
+        const db = firebase.firestore(); // Conexão com Firestore
+        const alunosSnapshot = await db.collection("alunos").get(); // Busca todos os alunos
+        let naoExibir = 0;
 
-        if (!snapshot.empty) {
-            const naoExibidos = snapshot.size; // Conta os documentos encontrados
-            exibirMensagemNaoExibidos(naoExibidos);
-        } else {
-            exibirMensagemNaoExibidos(0); // Nenhum aluno marcou 'não exibir'
-        }
+        // Itera por cada documento (aluno)
+        alunosSnapshot.forEach((doc) => {
+            const alunoData = doc.data();
+            if (alunoData.mostrarRanking === false) {
+                naoExibir++; // Conta os que optaram por não exibir
+            }
+        });
+
+        console.log(`Número de pessoas que optaram por NÃO aparecer no ranking: ${naoExibir}`);
+        document.getElementById("contadorNaoExibir").innerText = naoExibir; // Exibe na página
     } catch (error) {
-        console.error("Erro ao buscar alunos que não exibem no ranking:", error);
+        console.error("Erro ao contar pessoas que não querem aparecer no ranking:", error);
     }
 }
+
 
 // Função para exibir a mensagem na interface
 function exibirMensagemNaoExibidos(naoExibidos) {
@@ -598,6 +609,14 @@ function exibirMensagemNaoExibidos(naoExibidos) {
 
     function ocultarRanking() {
         document.getElementById('ranking-container').classList.add('hidden');
+        <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        contarNaoExibirRanking();
+    });
+</script>
+</body>
+</html>
+
     }
 </script>
 </body>
