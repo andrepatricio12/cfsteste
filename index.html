@@ -474,6 +474,49 @@
         }
     }
 }
+// Função para carregar o ranking e candidatos que não aparecerão
+async function carregarRanking() {
+    const rankingContainer = document.getElementById('ranking-container');
+    const naoExibirContainer = document.getElementById('nao-exibir-container');
+    
+    try {
+        const querySnapshot = await firebase.firestore().collection('alunos').get();
+        let rankingData = [];
+        let naoExibirCount = 0;
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.exibirNomeNoRanking) {
+                // Calcular a média das notas
+                const grades = Object.values(data.notas || {});
+                const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+                rankingData.push({ nome: data.nome, media: average });
+            } else {
+                naoExibirCount++;
+            }
+        });
+
+        // Ordenar o ranking por média decrescente
+        rankingData.sort((a, b) => b.media - a.media);
+
+        // Renderizar o ranking
+        rankingContainer.innerHTML = rankingData.map((item, index) => `
+            <div>${index + 1}. ${item.nome} - Média: ${item.media.toFixed(2)}</div>
+        `).join('');
+
+        // Atualizar mensagem de não exibição
+        naoExibirContainer.innerHTML = `
+            <span>Candidatos que cadastraram suas notas mas optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
+        `;
+    } catch (error) {
+        console.error('Erro ao carregar o ranking:', error);
+    }
+}
+
+// Chamada para carregar o ranking ao clicar no botão
+document.getElementById('ver-ranking').addEventListener('click', () => {
+    carregarRanking();
+});
 
 
     function mostrarRanking() {
