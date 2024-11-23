@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Notas - Curso de Sargentos 2024/2</title>
+    <title>Sistema de Notas - Curso de Sargentos</title>
     <style>
         /* Estilos gerais */
         body {
@@ -109,6 +109,7 @@
     padding: 10px;
     border-radius: 5px;
 }
+        }
         <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
     <table id="ranking-table">
@@ -203,13 +204,9 @@
         <div class="message hidden" id="ranking-container">
             <h3>Ranking de Alunos</h3>
             <div id="ranking-list"></div>
-             <div id="ranking-container">
+            <div id="ranking-container">
     <!-- Ranking já existente -->
     <div id="mensagem-nao-exibidos" style="margin-top: 10px; font-size: small;"></div>
-</div>
-            <div>
-    <h3>Pessoas que cadastraram as notas mas optaram por não aparecer no ranking:</h3>
-    <p id="contadorNaoExibir">0</p>
 </div>
 
             <button onclick="ocultarRanking()">Ocultar Ranking</button>
@@ -221,7 +218,6 @@
         </div>
     </div>
 </div>
-    
     <style>
     .ranking-table {
     width: 100%;
@@ -244,11 +240,17 @@
 .ranking-table td {
     background-color: #f9f9f9;
 }
+        <style>
+    /* Outros estilos existentes */
+
+    /* Ajustar largura da coluna "Número de Notas" */
+    #<style>
+    /* Ajustar largura da coluna "Número de Notas" */
     #ranking-container table th:nth-child(3),
     #ranking-container table td:nth-child(3) {
         width: 80px; /* Menor largura para a coluna "Número de Notas" */
         text-align: center;
-
+    }
 
     /* Ajustar largura da coluna "Nome" */
     #ranking-container table th:nth-child(2),
@@ -265,12 +267,15 @@
     #ranking-container table td:nth-child(4) {
         text-align: center;
     }
-       
-
 
     #ranking-container button {
         margin-top: 20px;
     }
+
+
+#ranking-container button {
+    margin-top: 20px;
+}
 
 </style>
 
@@ -414,8 +419,9 @@
                 checkbox.disabled = false;
                 rankingButton.disabled = true;
                 rankingButton.style.opacity = 0.5;
-                
-                 });
+            }
+        }
+    }); // <<< Remova qualquer chave extra aqui
 }
 
 
@@ -486,7 +492,7 @@
                     soma += alunoData[disciplina];
                     count++;
                 }
-            
+            }
 
             const media = count > 0 ? soma / count : 0;
             alunosRanking.push({ nome: alunoData.nome, media, notasSalvas: count });
@@ -551,7 +557,33 @@
         document.getElementById('ranking-container').classList.remove('hidden');
     });
 }
-    function atualizarRanking() {
+    // Função para buscar e contar os alunos que optaram por NÃO aparecer no ranking
+async function contarNaoExibidos() {
+    try {
+        const alunosRef = firebase.firestore().collection('alunos');
+        const snapshot = await alunosRef.where('mostrarRanking', '==', false).get();
+
+        if (!snapshot.empty) {
+            const naoExibidos = snapshot.size; // Conta os documentos encontrados
+            exibirMensagemNaoExibidos(naoExibidos);
+        } else {
+            exibirMensagemNaoExibidos(0); // Nenhum aluno marcou 'não exibir'
+        }
+    } catch (error) {
+        console.error("Erro ao buscar alunos que não exibem no ranking:", error);
+    }
+}
+
+// Função para exibir a mensagem na interface
+function exibirMensagemNaoExibidos(naoExibidos) {
+    const mensagemContainer = document.getElementById('mensagem-nao-exibidos');
+    mensagemContainer.innerHTML = `
+        <span>Alunos que cadastraram suas notas mas optaram por <b>não</b> aparecer no ranking: 
+            <span style="color: red; font-size: smaller;">${naoExibidos}</span>
+        </span>
+    `;
+}
+function atualizarRanking() {
     // Código para gerar o ranking
     gerarRanking(); 
 
@@ -559,63 +591,11 @@
     contarNaoExibidos();
 }
 
-    // Função para buscar e contar os alunos que optaram por NÃO aparecer no ranking
-// Função para contar pessoas que não querem aparecer no ranking
-async function contarNaoExibirRanking() {
-    try {
-        const db = firebase.firestore(); // Certifique-se de que o Firebase foi inicializado antes
-        const alunosSnapshot = await db.collection("alunos").get();
-        let naoExibir = 0;
-
-        alunosSnapshot.forEach((doc) => {
-            const alunoData = doc.data();
-            if (alunoData.mostrarRanking === false) {
-                naoExibir++;
-            }
-        });
-
-        console.log(`Número de pessoas que optaram por NÃO aparecer no ranking: ${naoExibir}`);
-        const contadorElement = document.getElementById("contadorNaoExibir");
-
-        // Verifica se o elemento existe antes de tentar modificá-lo
-        if (contadorElement) {
-            contadorElement.innerText = naoExibir;
-        }
-    } catch (error) {
-        console.error("Erro ao contar pessoas que não querem aparecer no ranking:", error);
-    }
-}
-
-// Garante que a função seja executada após o carregamento completo da página
-document.addEventListener("DOMContentLoaded", () => {
-    contarNaoExibirRanking();
-});
-
-
-
-// Função para exibir a mensagem na interface
-function exibirMensagemNaoExibidos(naoExibidos) {
-    const mensagemContainer = document.getElementById('mensagem-nao-exibidos');
-    mensagemContainer.innerHTML = `
-        <span>Alunos que optaram por <b>não</b> aparecer no ranking: 
-            <span style="color: red; font-size: smaller;">${naoExibidos}</span>
-        </span>
-    `;
-}
-
 
 
 
     function ocultarRanking() {
         document.getElementById('ranking-container').classList.add('hidden');
-        <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        contarNaoExibirRanking();
-    });
-</script>
-</body>
-</html>
-
     }
 </script>
 </body>
