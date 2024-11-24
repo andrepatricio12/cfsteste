@@ -481,10 +481,16 @@ async function carregarRanking() {
         let naoExibirCount = 0;
 
         querySnapshot.forEach((doc) => {
-        
-    } catch (error) {
-        console.error('Erro ao carregar o ranking:', error);
-    }
+            const data = doc.data();
+            if (data.mostrarRanking) {  // Certifique-se de usar a chave correta
+                // Calcular a média das notas
+                const grades = Object.values(data).filter((key) => key !== "nome" && key !== "mostrarRanking");
+                const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+                rankingData.push({ nome: data.nome, media: average });
+            } else {
+                naoExibirCount++;
+            }
+        });
 }
 document.getElementById('rankingButton').addEventListener('click', () => {
     carregarRanking();
