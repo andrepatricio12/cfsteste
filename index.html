@@ -93,9 +93,9 @@
         }
         #notas-salvas {
     margin-top: 20px;
-    max-height: 300px; /* Defina a altura máxima que você deseja */
-    overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
-    padding-right: 15px; /* Espaçamento para a barra de rolagem */
+    max-height: 300px; 
+    overflow-y: auto;  
+    padding-right: 15px; 
 }
 
 #notas-salvas ul {
@@ -205,11 +205,12 @@
         </div>
 
         <div class="message hidden" id="ranking-container">
-            <h3>Ranking de Alunos</h3>
-            <div id="ranking-list"></div>
-            <div id="ranking-container">
-    <div id="mensagem-nao-exibidos" style="margin-top: 10px; font-size: small;"></div>
+    <h3>Ranking de Alunos</h3>
+    <div id="ranking-list"></div>
+    <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;"></div>
+    <button onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
+
 
             <button onclick="ocultarRanking()">Ocultar Ranking</button>
         </div>
@@ -478,7 +479,7 @@
 }
 // Função para carregar o ranking e candidatos que não aparecerão
 async function carregarRanking() {
-    const rankingContainer = document.getElementById('ranking-container');
+    const rankingContainer = document.getElementById('ranking-list');
     const naoExibirContainer = document.getElementById('nao-exibir-container');
     
     try {
@@ -488,9 +489,9 @@ async function carregarRanking() {
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            if (data.mostrarRanking) {  // Corrigido aqui
+            if (data.mostrarRanking) {  // Certifique-se de usar a chave correta
                 // Calcular a média das notas
-                const grades = Object.values(data.notas || {});
+                const grades = Object.values(data).filter((key) => key !== "nome" && key !== "mostrarRanking");
                 const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
                 rankingData.push({ nome: data.nome, media: average });
             } else {
@@ -508,12 +509,15 @@ async function carregarRanking() {
 
         // Atualizar mensagem de não exibição
         naoExibirContainer.innerHTML = `
-            <span>Candidatos que cadastraram suas notas mas optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
+            <span>Alunos que cadastraram suas notas mas optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
         `;
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
     }
 }
+document.getElementById('rankingButton').addEventListener('click', () => {
+    carregarRanking();
+});
 
 
 
