@@ -558,6 +558,9 @@ async function carregarRanking() {
         console.error('Erro ao carregar o ranking:', error);
     }
 }
+document.getElementById('rankingButton').addEventListener('click', () => {
+    carregarRanking();
+});
 
 
 
