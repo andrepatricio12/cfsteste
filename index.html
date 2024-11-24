@@ -272,7 +272,6 @@
     margin-top: 20px;
 }
 
-
 </style>
 
 <script>
@@ -470,48 +469,6 @@
         }
     }
 }
-// Função para carregar o ranking e candidatos que não aparecerão
-async function carregarRanking() {
-    const rankingContainer = document.getElementById('ranking-list');
-    const naoExibirContainer = document.getElementById('nao-exibir-container');
-    
-    try {
-        const querySnapshot = await firebase.firestore().collection('alunos').get();
-        let rankingData = [];
-        let naoExibirCount = 0;
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            if (data.mostrarRanking) {  // Certifique-se de usar a chave correta
-                // Calcular a média das notas
-                const grades = Object.values(data).filter((key) => key !== "nome" && key !== "mostrarRanking");
-                const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-                rankingData.push({ nome: data.nome, media: average });
-            } else {
-                naoExibirCount++;
-            }
-        });
-
-        // Ordenar o ranking por média decrescente
-        rankingData.sort((a, b) => b.media - a.media);
-
-        // Renderizar o ranking
-        rankingContainer.innerHTML = rankingData.map((item, index) => `
-            <div>${index + 1}. ${item.nome} - Média: ${item.media.toFixed(2)}</div>
-        `).join('');
-
-        // Atualizar mensagem de não exibição
-        naoExibirContainer.innerHTML = `
-            <span>Alunos que cadastraram suas notas mas optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
-        `;
-    } catch (error) {
-        console.error('Erro ao carregar o ranking:', error);
-    }
-}
-document.getElementById('rankingButton').addEventListener('click', () => {
-    carregarRanking();
-});
-
 
 
     function mostrarRanking() {
@@ -595,40 +552,6 @@ document.getElementById('rankingButton').addEventListener('click', () => {
         document.getElementById('ranking-container').classList.remove('hidden');
     });
 }
-    // Função para buscar e contar os alunos que optaram por NÃO aparecer no ranking
-async function contarNaoExibidos() {
-    try {
-        const alunosRef = firebase.firestore().collection('alunos');
-        const snapshot = await alunosRef.where('mostrarRanking', '==', false).get();
-
-        if (!snapshot.empty) {
-            const naoExibidos = snapshot.size; // Conta os documentos encontrados
-            exibirMensagemNaoExibidos(naoExibidos);
-        } else {
-            exibirMensagemNaoExibidos(0); // Todos os alunos que casdatraram notas optaram por aparecer no ranking
-        }
-    } catch (error) {
-        console.error("Erro ao buscar alunos que não exibem no ranking:", error);
-    }
-}
-
-// Função para exibir a mensagem na interface
-function exibirMensagemNaoExibidos(naoExibidos) {
-    const mensagemContainer = document.getElementById('mensagem-nao-exibidos');
-    mensagemContainer.innerHTML = `
-        <span>Alunos que cadastraram suas notas mas optaram por <b>não</b> aparecer no ranking: 
-            <span style="color: red; font-size: smaller;">${naoExibidos}</span>
-        </span>
-    `;
-}
-function atualizarRanking() {
-    // Código para gerar o ranking
-    gerarRanking(); 
-
-    // Atualizar a contagem dos que não aparecem no ranking
-    contarNaoExibidos();
-}
-
 
 
 
