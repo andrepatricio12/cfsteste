@@ -92,40 +92,59 @@
             color: green;
         }
         #notas-salvas {
-    margin-top: 20px;
-    max-height: 300px; /* Defina a altura máxima que você deseja */
-    overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
-    padding-right: 15px; /* Espaçamento para a barra de rolagem */
-}
-
-#notas-salvas ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-#notas-salvas li {
-    background-color: #f0f0f0;
-    margin-bottom: 5px;
-    padding: 10px;
-    border-radius: 5px;
-}
+            margin-top: 20px;
+            max-height: 300px; /* Defina a altura máxima que você deseja */
+            overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
+            padding-right: 15px; /* Espaçamento para a barra de rolagem */
         }
-        <div class="message hidden" id="ranking-container">
-    <h3>Ranking de Alunos</h3>
-    <table id="ranking-table">
-        <thead>
-            <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>Nº de Notas</th>
-                <th>Média</th>
-            </tr>
-        </thead>
-        <tbody id="ranking-body">
-        </tbody>
-    </table>
-    <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
-</div>
+        #notas-salvas ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        #notas-salvas li {
+            background-color: #f0f0f0;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .ranking-table th, .ranking-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .ranking-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        .ranking-table td {
+            background-color: #f9f9f9;
+        }
+        #ranking-container table th:nth-child(3),
+        #ranking-container table td:nth-child(3) {
+            width: 80px; /* Menor largura para a coluna "Número de Notas" */
+            text-align: center;
+        }
+        #ranking-container table th:nth-child(2),
+        #ranking-container table td:nth-child(2) {
+            width: auto; /* Largura ajustável para o nome */
+            white-space: nowrap; /* Impede a quebra de linha */
+            text-align: left;
+        }
+        #ranking-container table th:nth-child(1),
+        #ranking-container table td:nth-child(1),
+        #ranking-container table th:nth-child(4),
+        #ranking-container table td:nth-child(4) {
+            text-align: center;
+        }
+        #ranking-container button {
+            margin-top: 20px;
+        }
     </style>
     <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -198,16 +217,17 @@
         <div class="message" id="media-container">Sua média é: <span id="media-value"></span></div>
 
         <div class="button-group spacing">
-            <button id="rankingButton" disabled onclick="mostrarRanking()">Ver Ranking</button>
+            <button id="rankingButton" disabled onclick="mostrarRanking()">Ver Ranking</button[_{{{CITATION{{{_1{](https://github.com/AAndreLuis-dev/HTML-CSS_CursoEmVideo/tree/6428913bc9fbaa312d2cdade3550496520635d65/modulo-01%2Fmodulo-1%28d%29%2Fd002%2FREADME.md)[_{{{CITATION{{{_2{](https://github.com/lgfranco22/blog/tree/2ff765f5547038ea91aa40671858d9fd9d5ffb28/entrar.php)
+
+                        <button id="rankingButton" disabled onclick="mostrarRanking()">Ver Ranking</button>
         </div>
 
         <div class="message hidden" id="ranking-container">
-    <h3>Ranking de Alunos</h3>
-    <div id="ranking-list"></div>
-    <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;"></div>
-    <button onclick="ocultarRanking()">Ocultar Ranking</button>
-</div>
-
+            <h3>Ranking de Alunos</h3>
+            <div id="ranking-list"></div>
+            <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;"></div>
+            <button onclick="ocultarRanking()">Ocultar Ranking</button>
+        </div>
 
         <div id="notas-salvas">
             <h3>Notas Salvas</h3>
@@ -215,67 +235,6 @@
         </div>
     </div>
 </div>
-    <style>
-    .ranking-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.ranking-table th, .ranking-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-}
-
-.ranking-table th {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-}
-
-.ranking-table td {
-    background-color: #f9f9f9;
-}
-        <style>
-    /* Outros estilos existentes */
-
-    /* Ajustar largura da coluna "Número de Notas" */
-    #<style>
-    /* Ajustar largura da coluna "Número de Notas" */
-    #ranking-container table th:nth-child(3),
-    #ranking-container table td:nth-child(3) {
-        width: 80px; /* Menor largura para a coluna "Número de Notas" */
-        text-align: center;
-    }
-
-    /* Ajustar largura da coluna "Nome" */
-    #ranking-container table th:nth-child(2),
-    #ranking-container table td:nth-child(2) {
-        width: auto; /* Largura ajustável para o nome */
-        white-space: nowrap; /* Impede a quebra de linha */
-        text-align: left;
-    }
-
-    /* Outras colunas */
-    #ranking-container table th:nth-child(1),
-    #ranking-container table td:nth-child(1),
-    #ranking-container table th:nth-child(4),
-    #ranking-container table td:nth-child(4) {
-        text-align: center;
-    }
-
-    #ranking-container button {
-        margin-top: 20px;
-    }
-
-
-#ranking-container button {
-    margin-top: 20px;
-}
-
-</style>
-
 <script>
     // Configuração do Firebase
     const firebaseConfig = {
@@ -348,38 +307,39 @@
     }
 
     function salvarNota() {
-    const disciplina = document.getElementById('disciplina').value;
-    const nota = parseFloat(document.getElementById('nota').value);
-    const mostrarRanking = document.getElementById('showInRankingCheckbox').checked;
+        const disciplina = document.getElementById('disciplina').value;
+        const nota = parseFloat(document.getElementById('nota').value);
+        const mostrarRanking = document.getElementById('showInRankingCheckbox').checked;
 
-    if (isNaN(nota) || nota < 0 || nota > 10) {
-        document.getElementById('nota-error').classList.remove('hidden');
-        setTimeout(() => {
-            document.getElementById('nota-error').classList.add('hidden');
-        }, 2000);
-        return;
+        if (isNaN(nota) || nota < 0 || nota > 10) {
+            document.getElementById('nota-error').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('nota-error').classList.add('hidden');
+            }, 2000);
+            return;
+        }
+
+        const alunoRef = db.collection("alunos").doc(matriculaAtual);
+        alunoRef.set({
+            [disciplina]: nota,
+            nome: nomeAlunoAtual,
+            mostrarRanking: mostrarRanking
+        }, { merge: true }).then(() => {
+            document.getElementById('nota-success').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('nota-success').classList.add('hidden');
+            }, 2000);
+            carregarNotas();
+            calcularMedia();
+        });
     }
 
-    const alunoRef = db.collection("alunos").doc(matriculaAtual);
-    alunoRef.set({
-        [disciplina]: nota,
-        nome: nomeAlunoAtual,
-        mostrarRanking: mostrarRanking
-    }, { merge: true }).then(() => {
-        document.getElementById('nota-success').classList.remove('hidden');
-        setTimeout(() => {
-            document.getElementById('nota-success').classList.add('hidden');
-        }, 2000);
-        carregarNotas();
-        calcularMedia();
-    });
-}
     function salvarPreferenciaRanking(mostrarRanking) {
-    const alunoRef = db.collection("alunos").doc(matriculaAtual);
-    alunoRef.update({
-        mostrarRanking: mostrarRanking
-    });
-}
+        const alunoRef = db.collection("alunos").doc(matriculaAtual);
+        alunoRef.update({
+            mostrarRanking: mostrarRanking
+        });
+    }
 
     function excluirNota() {
         const disciplina = document.getElementById('disciplina').value;
@@ -393,34 +353,33 @@
         });
     }
 
-   function carregarNotas() {
-    const alunoRef = db.collection("alunos").doc(matriculaAtual);
-    alunoRef.get().then((doc) => {
-        if (doc.exists) {
-            notasSalvas = doc.data();
-            atualizarCampoNota();
-            mostrarNotasSalvas();
-            calcularMedia();
+    function carregarNotas() {
+        const alunoRef = db.collection("alunos").doc(matriculaAtual);
+        alunoRef.get().then((doc) => {
+            if (doc.exists) {
+                notasSalvas = doc.data();
+                atualizarCampoNota();
+                mostrarNotasSalvas();
+                calcularMedia();
 
-            // Ajusta o estado do checkbox e botão de ranking
-            const checkbox = document.getElementById('showInRankingCheckbox');
-            const rankingButton = document.getElementById('rankingButton');
+                // Ajusta o estado do checkbox e botão de ranking
+                const checkbox = document.getElementById('showInRankingCheckbox');
+                const rankingButton = document.getElementById('rankingButton');
 
-            if (notasSalvas.mostrarRanking) {
-                checkbox.checked = true;
-                checkbox.disabled = true; // Uma vez optado, desabilitar
-                rankingButton.disabled = false;
-                rankingButton.style.opacity = 1;
-            } else {
-                checkbox.checked = false;
-                checkbox.disabled = false;
-                rankingButton.disabled = true;
-                rankingButton.style.opacity = 0.5;
+                if (notasSalvas.mostrarRanking) {
+                    checkbox.checked = true;
+                    checkbox.disabled = true; // Uma vez optado, desabilitar
+                    rankingButton.disabled = false;
+                    rankingButton.style.opacity = 1;
+                } else {
+                    checkbox.checked = false;
+                    checkbox.disabled = false;
+                    rankingButton.disabled = true;
+                    rankingButton.style.opacity = 0.5;
+                }
             }
-        }
-    }); // <<< Remova qualquer chave extra aqui
-}
-
+        });
+    }
 
     function atualizarCampoNota() {
         const disciplina = document.getElementById('disciplina').value;
@@ -456,21 +415,23 @@
     }
 
     function toggleRankingButton() {
-    const checkbox = document.getElementById('showInRankingCheckbox');
-    const rankingButton = document.getElementById('rankingButton');
+        const checkbox = document.getElementById('showInRankingCheckbox');
+        const rankingButton = document.getElementById('rankingButton');
 
-    if (checkbox.checked) {
-        const confirmacao = confirm('Você deseja que seu nome seja exibido no ranking? Esta ação não pode ser desfeita.');
-        if (confirmacao) {
-            rankingButton.disabled = false;
-            rankingButton.style.opacity = 1;
-            checkbox.disabled = true; // Desabilita o checkbox após confirmação
-            salvarPreferenciaRanking(true); // Salva a escolha no banco de dados
+        if (checkbox.checked) {
+            const confirmacao = confirm('Você deseja que seu nome seja exibido no ranking? Esta ação não pode ser desfeita.');
+            if (confirmacao) {
+                rankingButton.disabled = false;
+                rankingButton.style.opacity = 1;
+                checkbox.disabled = true; // Desabilita o checkbox após confirmação
+                salvarPreferenciaRanking(true); // Salva a escolha no banco de dados
+            } else {
         } else {
             checkbox.checked = false; // Reverte a seleção se a confirmação for cancelada
         }
     }
 }
+
 async function carregarRanking() {
     const rankingContainer = document.getElementById('ranking-list');
     const naoExibirContainer = document.getElementById('nao-exibir-container');
@@ -484,9 +445,9 @@ async function carregarRanking() {
             const data = doc.data();
             if (data.mostrarRanking) {  // Certifique-se de usar a chave correta
                 // Calcular a média das notas
-                const grades = Object.values(data).filter((key) => key !== "nome" && key !== "mostrarRanking");
+                const grades = Object.keys(data).filter(key => key !== "nome" && key !== "mostrarRanking").map(key => data[key]);
                 const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
-                rankingData.push({ nome: data.nome, media: average });
+                rankingData.push({ nome: data.nome, media: average, notasSalvas: grades.length });
             } else {
                 naoExibirCount++;
             }
@@ -495,10 +456,60 @@ async function carregarRanking() {
         // Ordenar o ranking por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
-        // Renderizar o ranking
-        rankingContainer.innerHTML = rankingData.map((item, index) => `
-            <div>${index + 1}. ${item.nome} - Média: ${item.media.toFixed(2)}</div>
-        `).join('');
+        // Criando a tabela com as colunas separadas
+        const tabela = document.createElement('table');
+        tabela.classList.add('ranking-table'); // Classe para estilizar a tabela
+
+        // Cabeçalho da tabela
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+
+        const thPosicao = document.createElement('th');
+        thPosicao.textContent = 'Posição';
+        headerRow.appendChild(thPosicao);
+
+        const thNome = document.createElement('th');
+        thNome.textContent = 'Nome';
+        headerRow.appendChild(thNome);
+
+        const thNotas = document.createElement('th');
+        thNotas.textContent = 'Nº de Notas';
+        headerRow.appendChild(thNotas);
+
+        const thMedia = document.createElement('th');
+        thMedia.textContent = 'Média';
+        headerRow.appendChild(thMedia);
+
+        thead.appendChild(headerRow);
+        tabela.appendChild(thead);
+
+        // Corpo da tabela
+        const tbody = document.createElement('tbody');
+        rankingData.forEach((item, index) => {
+            const row = document.createElement('tr');
+
+            const tdPosicao = document.createElement('td');
+            tdPosicao.textContent = `${index + 1}º`;
+            row.appendChild(tdPosicao);
+
+            const tdNome = document.createElement('td');
+            tdNome.textContent = item.nome;
+            row.appendChild(tdNome);
+
+            const tdNotas = document.createElement('td');
+            tdNotas.textContent = item.notasSalvas;
+            row.appendChild(tdNotas);
+
+            const tdMedia = document.createElement('td');
+            tdMedia.textContent = item.media.toFixed(2);
+            row.appendChild(tdMedia);
+
+            tbody.appendChild(row);
+        });
+
+        tabela.appendChild(tbody);
+        rankingContainer.innerHTML = '';
+        rankingContainer.appendChild(tabela);
 
         // Atualizar mensagem de não exibição
         naoExibirContainer.innerHTML = `
@@ -508,12 +519,13 @@ async function carregarRanking() {
         console.error('Erro ao carregar o ranking:', error);
     }
 }
+
+
 document.getElementById('rankingButton').addEventListener('click', () => {
     carregarRanking();
 });
 
-
-    function mostrarRanking() {
+function mostrarRanking() {
     db.collection("alunos").where("mostrarRanking", "==", true).get().then((querySnapshot) => {
         let rankingList = document.getElementById('ranking-list');
         rankingList.innerHTML = ''; // Limpa a lista antes de adicionar o ranking
@@ -595,11 +607,9 @@ document.getElementById('rankingButton').addEventListener('click', () => {
     });
 }
 
-
-
-    function ocultarRanking() {
-        document.getElementById('ranking-container').classList.add('hidden');
-    }
+function ocultarRanking() {
+    document.getElementById('ranking-container').classList.add('hidden');
+}
 </script>
 </body>
 </html>
