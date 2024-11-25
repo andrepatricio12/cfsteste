@@ -92,57 +92,40 @@
             color: green;
         }
         #notas-salvas {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 15px;
-        }
+    margin-top: 20px;
+    max-height: 300px; /* Defina a altura máxima que você deseja */
+    overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
+    padding-right: 15px; /* Espaçamento para a barra de rolagem */
+}
 
-        #notas-salvas ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
+#notas-salvas ul {
+    list-style-type: none;
+    padding-left: 0;
+}
 
-        #notas-salvas li {
-            background-color: #f0f0f0;
-            margin-bottom: 5px;
-            padding: 10px;
-            border-radius: 5px;
+#notas-salvas li {
+    background-color: #f0f0f0;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 5px;
+}
         }
-
-        .ranking-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .ranking-table th, .ranking-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .ranking-table th {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-
-        .ranking-table td {
-            background-color: #f9f9f9;
-        }
-
-        /* Ajustar largura das colunas */
-        #ranking-container table th:nth-child(2),
-        #ranking-container table td:nth-child(2) {
-            white-space: nowrap; /* Impede a quebra de linha */
-            text-align: left;
-        }
-        #ranking-container table th:nth-child(3),
-        #ranking-container table td:nth-child(3) {
-            width: 80px;
-            text-align: center;
-        }
+        <div class="message hidden" id="ranking-container">
+    <h3>Ranking de Alunos</h3>
+    <table id="ranking-table">
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>Nº de Notas</th>
+                <th>Média</th>
+            </tr>
+        </thead>
+        <tbody id="ranking-body">
+        </tbody>
+    </table>
+    <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
+</div>
     </style>
     <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -221,7 +204,7 @@
         <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
     <div id="ranking-list"></div>
-    <div id="nao-exibir-container" style="margin-top 10px; font-size: small;"></div>
+    <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;"></div>
     <button onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
 
@@ -410,33 +393,7 @@
         });
     }
 
-   function carregarNotas() {
-    const alunoRef = db.collection("alunos").doc(matriculaAtual);
-    alunoRef.get().then((doc) => {
-        if (doc.exists) {
-            notasSalvas = doc.data();
-            atualizarCampoNota();
-            mostrarNotasSalvas();
-            calcularMedia();
-
-            // Ajusta o estado do checkbox e botão de ranking
-            const checkbox = document.getElementById('showInRankingCheckbox');
-            const rankingButton = document.getElementById('rankingButton');
-
-            if (notasSalvas.mostrarRanking) {
-                checkbox.checked = true;
-                checkbox.disabled = true; // Uma vez optado, desabilitar
-                rankingButton.disabled = false;
-                rankingButton.style.opacity = 1;
-            } else {
-                checkbox.checked = false;
-                checkbox.disabled = false;
-                rankingButton.disabled = true;
-                rankingButton.style.opacity = 0.5;
-            }
-        }
-    }); // <<< Remova qualquer chave extra aqui
-}
+   function carregarNotas() { const alunoRef = db.collection("alunos").doc(matriculaAtual); alunoRef.get().then((doc) => { if (doc.exists) { notasSalvas = doc.data(); atualizarCampoNota(); mostrarNotasSalvas(); calcularMedia(); // Verifica se há notas cadastradas const hasNotas = Object.keys(notasSalvas).some(key => key !== 'nome' && key !== 'mostrarRanking'); // Ajusta o estado do checkbox e botão de ranking const checkbox = document.getElementById('showInRankingCheckbox'); const rankingButton = document.getElementById('rankingButton'); if (notasSalvas.mostrarRanking) { checkbox.checked = true; checkbox.disabled = true; // Uma vez optado, desabilitar } else { checkbox.checked = false; checkbox.disabled = false; } // Habilita o botão de ranking somente se houver notas rankingButton.disabled = !hasNotas; rankingButton.style.opacity = hasNotas ? 1 : 0.5; } });
 
 
     function atualizarCampoNota() {
@@ -569,7 +526,7 @@ async function carregarRanking() {
 
         // Atualizar mensagem de não exibição
         naoExibirContainer.innerHTML = `
-            <span>Alunos que cadastraram suas notas mas optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
+            <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
         `;
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
