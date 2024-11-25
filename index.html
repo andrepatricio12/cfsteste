@@ -92,40 +92,57 @@
             color: green;
         }
         #notas-salvas {
-    margin-top: 20px;
-    max-height: 300px; /* Defina a altura máxima que você deseja */
-    overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
-    padding-right: 15px; /* Espaçamento para a barra de rolagem */
-}
-
-#notas-salvas ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-#notas-salvas li {
-    background-color: #f0f0f0;
-    margin-bottom: 5px;
-    padding: 10px;
-    border-radius: 5px;
-}
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 15px;
         }
-        <div class="message hidden" id="ranking-container">
-    <h3>Ranking de Alunos</h3>
-    <table id="ranking-table">
-        <thead>
-            <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>Nº de Notas</th>
-                <th>Média</th>
-            </tr>
-        </thead>
-        <tbody id="ranking-body">
-        </tbody>
-    </table>
-    <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
-</div>
+
+        #notas-salvas ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #notas-salvas li {
+            background-color: #f0f0f0;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .ranking-table th, .ranking-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .ranking-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .ranking-table td {
+            background-color: #f9f9f9;
+        }
+
+        /* Ajustar largura das colunas */
+        #ranking-container table th:nth-child(2),
+        #ranking-container table td:nth-child(2) {
+            white-space: nowrap; /* Impede a quebra de linha */
+            text-align: left;
+        }
+        #ranking-container table th:nth-child(3),
+        #ranking-container table td:nth-child(3) {
+            width: 80px;
+            text-align: center;
+        }
     </style>
     <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -204,7 +221,7 @@
         <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
     <div id="ranking-list"></div>
-    <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;"></div>
+    <div id="nao-exibir-container" style="margin-top 10px; font-size: small;"></div>
     <button onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
 
