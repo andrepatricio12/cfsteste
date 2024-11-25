@@ -429,22 +429,7 @@
         document.getElementById('media-value').textContent = media;
     }
 
-    function toggleRankingButton() {
-    const checkbox = document.getElementById('showInRankingCheckbox');
-    const rankingButton = document.getElementById('rankingButton');
-
-    if (checkbox.checked) {
-        const confirmacao = confirm('Você deseja que seu nome seja exibido no ranking? Esta ação não pode ser desfeita.');
-        if (confirmacao) {
-            rankingButton.disabled = false;
-            rankingButton.style.opacity = 1;
-            checkbox.disabled = true; // Desabilita o checkbox após confirmação
-            salvarPreferenciaRanking(true); // Salva a escolha no banco de dados
-        } else {
-            checkbox.checked = false; // Reverte a seleção se a confirmação for cancelada
-        }
-    }
-}
+    function toggleRankingButton() { const checkbox = document.getElementById('showInRankingCheckbox'); const rankingButton = document.getElementById('rankingButton'); if (checkbox.checked) { const confirmacao = confirm('Você deseja que seu nome seja exibido no ranking? Esta ação não pode ser desfeita.'); if (confirmacao) { checkbox.disabled = true; // Desabilita o checkbox após confirmação salvarPreferenciaRanking(true); // Salva a escolha no banco de dados // Verifica se há notas cadastradas const hasNotas = Object.keys(notasSalvas).some(key => key !== 'nome' && key !== 'mostrarRanking'); // Habilita o botão de ranking somente se houver notas rankingButton.disabled = !hasNotas; rankingButton.style.opacity = hasNotas ? 1 : 0.5; } else { checkbox.checked = false; // Reverte a seleção se a confirmação for cancelada } }
 async function carregarRanking() {
     const rankingContainer = document.getElementById('ranking-list');
     const naoExibirContainer = document.getElementById('nao-exibir-container');
