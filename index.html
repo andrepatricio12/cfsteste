@@ -601,13 +601,7 @@ async function carregarRanking() {
         thNotas.textContent = 'Nº de Notas';
         headerRow.appendChild(thNotas);
 
-        const thMedia = document.createElement('th');
-        thMedia.textContent = 'Média';
-        headerRow.appendChild(thMedia);
-
-        thead.appendChild(headerRow);
-        tabela.appendChild(thead);
-
+       
         // Corpo da tabela
         const tbody = document.createElement('tbody');
         alunosRanking.forEach((aluno, index) => {
@@ -625,12 +619,7 @@ async function carregarRanking() {
             tdNotas.textContent = aluno.notasSalvas;
             row.appendChild(tdNotas);
 
-            const tdMedia = document.createElement('td');
-            tdMedia.textContent = aluno.media.toFixed(2);
-            row.appendChild(tdMedia);
-
-            tbody.appendChild(row);
-        });
+                   });
 
         tabela.appendChild(tbody);
         rankingList.appendChild(tabela);
