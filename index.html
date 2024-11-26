@@ -440,19 +440,19 @@
     }
 
     function calcularMedia() {
-        let soma = 0;
-        let count = 0;
+    let soma = 0;
+    let count = 0;
 
-        for (const disciplina in notasSalvas) {
-            if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
-                soma += notasSalvas[disciplina];
-                count++;
-            }
+    for (const disciplina in notasSalvas) {
+        if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
+            soma += notasSalvas[disciplina];
+            count++;
         }
-
-        const media = count > 0 ? (soma / count).toFixed(2) : 'N/A';
-        document.getElementById('media-value').textContent = media;
     }
+
+    const media = count > 0 ? (soma / count).toFixed(2) : 'N/A';
+    document.getElementById('media-value').textContent = media;
+}
 
     function toggleRankingButton() {
     const checkbox = document.getElementById('showInRankingCheckbox');
@@ -550,6 +550,10 @@ async function carregarRanking() {
         console.error('Erro ao carregar o ranking:', error);
     }
 }
+document.getElementById('rankingButton').addEventListener('click', () => {
+    carregarRanking();
+});
+
 
 
     function mostrarRanking() {
@@ -601,7 +605,13 @@ async function carregarRanking() {
         thNotas.textContent = 'Nº de Notas';
         headerRow.appendChild(thNotas);
 
-       
+        const thMedia = document.createElement('th');
+        thMedia.textContent = 'Média';
+        headerRow.appendChild(thMedia);
+
+        thead.appendChild(headerRow);
+        tabela.appendChild(thead);
+
         // Corpo da tabela
         const tbody = document.createElement('tbody');
         alunosRanking.forEach((aluno, index) => {
@@ -619,7 +629,12 @@ async function carregarRanking() {
             tdNotas.textContent = aluno.notasSalvas;
             row.appendChild(tdNotas);
 
-                   });
+            const tdMedia = document.createElement('td');
+            tdMedia.textContent = aluno.media.toFixed(2);
+            row.appendChild(tdMedia);
+
+            tbody.appendChild(row);
+        });
 
         tabela.appendChild(tbody);
         rankingList.appendChild(tabela);
