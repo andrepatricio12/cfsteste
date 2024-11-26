@@ -118,6 +118,7 @@
                 <th>Posição</th>
                 <th>Nome</th>
                 <th>Nº de Notas</th>
+                <th>Média</th>
             </tr>
         </thead>
         <tbody id="ranking-body">
@@ -481,31 +482,22 @@ async function carregarRanking() {
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            if (data.mostrarRanking) {  // Verifica se o aluno optou por aparecer no ranking
-                const notas = Object.keys(data)
-                    .filter(key => key !== "nome" && key !== "mostrarRanking")
-                    .map(key => data[key]);
-
-                const media = notas.length > 0
-                    ? notas.reduce((sum, nota) => sum + nota, 0) / notas.length
-                    : 0;
-
-                rankingData.push({
-                    nome: data.nome,
-                    media: media,
-                    notasSalvas: notas.length
-                });
+            if (data.mostrarRanking) {  // Certifique-se de usar a chave correta
+                // Calcular a média das notas
+                const grades = Object.keys(data).filter(key => key !== "nome" && key !== "mostrarRanking").map(key => data[key]);
+                const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+                rankingData.push({ nome: data.nome, media: average, notasSalvas: grades.length });
             } else {
                 naoExibirCount++;
             }
         });
 
-        // Ordenar o ranking pela média
+        // Ordenar o ranking por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
-        // Criar a tabela de exibição
+        // Criando a tabela com as colunas separadas
         const tabela = document.createElement('table');
-        tabela.classList.add('ranking-table');
+        tabela.classList.add('ranking-table'); // Classe para estilizar a tabela
 
         // Cabeçalho da tabela
         const thead = document.createElement('thead');
@@ -522,6 +514,10 @@ async function carregarRanking() {
         const thNotas = document.createElement('th');
         thNotas.textContent = 'Nº de Notas';
         headerRow.appendChild(thNotas);
+
+        const thMedia = document.createElement('th');
+        thMedia.textContent = 'Média';
+        headerRow.appendChild(thMedia);
 
         thead.appendChild(headerRow);
         tabela.appendChild(thead);
@@ -543,6 +539,10 @@ async function carregarRanking() {
             tdNotas.textContent = item.notasSalvas;
             row.appendChild(tdNotas);
 
+            const tdMedia = document.createElement('td');
+            tdMedia.textContent = item.media.toFixed(2);
+            row.appendChild(tdMedia);
+
             tbody.appendChild(row);
         });
 
@@ -550,7 +550,7 @@ async function carregarRanking() {
         rankingContainer.innerHTML = '';
         rankingContainer.appendChild(tabela);
 
-        // Atualizar a mensagem de alunos que optaram por não aparecer
+        // Atualizar mensagem de não exibição
         naoExibirContainer.innerHTML = `
             <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
         `;
@@ -558,6 +558,9 @@ async function carregarRanking() {
         console.error('Erro ao carregar o ranking:', error);
     }
 }
+document.getElementById('rankingButton').addEventListener('click', () => {
+    carregarRanking();
+});
 
 
 
