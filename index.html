@@ -383,7 +383,7 @@
     function excluirNota() {
     const disciplina = document.getElementById('disciplina').value;
 
-    const totalNotas = Object.keys(notasSalvas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
+    const totalNotas = contarNotasValidas(notasSalvas);
     if (totalNotas <= 1) {
         alert("Você não pode excluir todas as notas. Deve haver ao menos uma nota cadastrada.");
         return;
@@ -396,7 +396,6 @@
         carregarNotas();
         calcularMedia();
 
-        // Oculta o ranking se restarem menos de 5 notas
         const updatedTotalNotas = totalNotas - 1;
         if (updatedTotalNotas < 5) {
             ocultarRanking();
@@ -406,7 +405,7 @@
 
 
 
-   function carregarNotas() {
+  function carregarNotas() {
     const alunoRef = db.collection("alunos").doc(matriculaAtual);
     alunoRef.get().then((doc) => {
         if (doc.exists) {
@@ -415,19 +414,20 @@
             mostrarNotasSalvas();
             calcularMedia();
 
-            const totalNotas = Object.keys(notasSalvas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
+            const totalNotas = contarNotasValidas(notasSalvas);
 
             const rankingButton = document.getElementById('rankingButton');
-            if (totalNotas >= 5) {
-                rankingButton.disabled = false;
-                rankingButton.style.opacity = 1;
-            } else {
-                rankingButton.disabled = true;
-                rankingButton.style.opacity = 0.5;
-                alert("Você precisa ter pelo menos 5 notas cadastradas para visualizar o ranking.");
+            rankingButton.disabled = totalNotas < 5;
+            rankingButton.style.opacity = totalNotas >= 5 ? 1 : 0.5;
+
+            if (totalNotas < 5) {
+                ocultarRanking();
             }
-        }
     });
+}
+
+function contarNotasValidas(notas) {
+    return Object.keys(notas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
 }
 
 
@@ -566,64 +566,57 @@ document.getElementById('rankingButton').addEventListener('click', () => {
 
 
 
-    function mostrarRanking() {
-    if (Object.keys(notasSalvas).length <= 2) { // Somente 'nome' e 'mostrarRanking' são padrão
-        alert("É necessário cadastrar ao menos uma nota para visualizar o ranking.");
-        return;
-    }
-
-    db.collection("alunos").where("mostrarRanking", "==", true).get().then((querySnapshot) => {
-        let rankingList = document.getElementById('ranking-list');
-        rankingList.innerHTML = ''; // Limpa a lista antes de adicionar o ranking
-        let alunosRanking = [];
-
-        querySnapshot.forEach((doc) => {
-            const alunoData = doc.data();
-            let soma = 0;
-            let count = 0;
-
-            for (const disciplina in alunoData) {
-                if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
-                    soma += alunoData[disciplina];
-                    count++;
-                }
-                 const totalNotas = Object.keys(notasSalvas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
+  function mostrarRanking() {
+    // Verifica se o aluno logado tem pelo menos 5 notas salvas
+    const totalNotas = Object.keys(notasSalvas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
     if (totalNotas < 5) {
         alert("Você precisa ter pelo menos 5 notas cadastradas para visualizar o ranking.");
         return;
     }
 
-    document.getElementById('ranking-container').classList.remove('hidden');
-}
+    // Recupera os alunos que optaram por aparecer no ranking
+    db.collection("alunos").where("mostrarRanking", "==", true).get().then((querySnapshot) => {
+        const rankingList = document.getElementById('ranking-list');
+        rankingList.innerHTML = ''; // Limpa o conteúdo anterior do ranking
+        const alunosRanking = [];
+
+        // Processa os dados de cada aluno
+        querySnapshot.forEach((doc) => {
+            const alunoData = doc.data();
+            let soma = 0;
+            let count = 0;
+
+            // Calcula a média das notas do aluno
+            for (const disciplina in alunoData) {
+                if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
+                    soma += alunoData[disciplina];
+                    count++;
+                }
             }
 
             const media = count > 0 ? soma / count : 0;
-            alunosRanking.push({ nome: alunoData.nome, media, notasSalvas: count });
+            alunosRanking.push({
+                nome: alunoData.nome,
+                media,
+                notasSalvas: count
+            });
         });
 
+        // Ordena o ranking pela média de notas (decrescente)
         alunosRanking.sort((a, b) => b.media - a.media);
 
-        // Criando a tabela com as colunas separadas
+        // Cria a tabela do ranking
         const tabela = document.createElement('table');
-        tabela.classList.add('ranking-table'); // Classe para estilizar a tabela
+        tabela.classList.add('ranking-table');
 
         // Cabeçalho da tabela
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
-
-        const thPosicao = document.createElement('th');
-        thPosicao.textContent = 'Posição';
-        headerRow.appendChild(thPosicao);
-
-        const thNome = document.createElement('th');
-        thNome.textContent = 'Nome';
-        headerRow.appendChild(thNome);
-
-        const thNotas = document.createElement('th');
-        thNotas.textContent = 'Nº de Notas';
-        headerRow.appendChild(thNotas);
-
-
+        headerRow.innerHTML = `
+            <th>Posição</th>
+            <th>Nome</th>
+            <th>Nº de Notas</th>
+        `;
         thead.appendChild(headerRow);
         tabela.appendChild(thead);
 
@@ -631,29 +624,23 @@ document.getElementById('rankingButton').addEventListener('click', () => {
         const tbody = document.createElement('tbody');
         alunosRanking.forEach((aluno, index) => {
             const row = document.createElement('tr');
-
-            const tdPosicao = document.createElement('td');
-            tdPosicao.textContent = `${index + 1}º`;
-            row.appendChild(tdPosicao);
-
-            const tdNome = document.createElement('td');
-            tdNome.textContent = aluno.nome;
-            row.appendChild(tdNome);
-
-            const tdNotas = document.createElement('td');
-            tdNotas.textContent = aluno.notasSalvas;
-            row.appendChild(tdNotas);
-
-
+            row.innerHTML = `
+                <td>${index + 1}º</td>
+                <td>${aluno.nome}</td>
+                <td>${aluno.notasSalvas}</td>
+            `;
             tbody.appendChild(row);
         });
-
         tabela.appendChild(tbody);
-        rankingList.appendChild(tabela);
 
+        // Exibe a tabela no ranking
+        rankingList.appendChild(tabela);
         document.getElementById('ranking-container').classList.remove('hidden');
+    }).catch((error) => {
+        console.error("Erro ao carregar o ranking:", error);
     });
 }
+
 
 
 
