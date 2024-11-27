@@ -381,16 +381,30 @@
 }
 
     function excluirNota() {
-        const disciplina = document.getElementById('disciplina').value;
+    const disciplina = document.getElementById('disciplina').value;
 
-        const alunoRef = db.collection("alunos").doc(matriculaAtual);
-        alunoRef.update({
-            [disciplina]: firebase.firestore.FieldValue.delete()
-        }).then(() => {
-            carregarNotas();
-            calcularMedia();
-        });
+    const totalNotas = Object.keys(notasSalvas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
+    if (totalNotas <= 1) {
+        alert("Você não pode excluir todas as notas. Deve haver ao menos uma nota cadastrada.");
+        return;
     }
+
+    const alunoRef = db.collection("alunos").doc(matriculaAtual);
+    alunoRef.update({
+        [disciplina]: firebase.firestore.FieldValue.delete()
+    }).then(() => {
+        carregarNotas();
+        calcularMedia();
+
+        // Oculta o ranking se restarem menos de 5 notas
+        const updatedTotalNotas = totalNotas - 1;
+        if (updatedTotalNotas < 5) {
+            ocultarRanking();
+        }
+    });
+}
+
+
 
    function carregarNotas() {
     const alunoRef = db.collection("alunos").doc(matriculaAtual);
@@ -401,24 +415,21 @@
             mostrarNotasSalvas();
             calcularMedia();
 
-            // Ajusta o estado do checkbox e botão de ranking
-            const checkbox = document.getElementById('showInRankingCheckbox');
-            const rankingButton = document.getElementById('rankingButton');
+            const totalNotas = Object.keys(notasSalvas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
 
-            if (notasSalvas.mostrarRanking) {
-                checkbox.checked = true;
-                checkbox.disabled = true; // Uma vez optado, desabilitar
+            const rankingButton = document.getElementById('rankingButton');
+            if (totalNotas >= 5) {
                 rankingButton.disabled = false;
                 rankingButton.style.opacity = 1;
             } else {
-                checkbox.checked = false;
-                checkbox.disabled = false;
                 rankingButton.disabled = true;
                 rankingButton.style.opacity = 0.5;
+                alert("Você precisa ter pelo menos 5 notas cadastradas para visualizar o ranking.");
             }
         }
-    }); // <<< Remova qualquer chave extra aqui
+    });
 }
+
 
 
     function atualizarCampoNota() {
@@ -576,6 +587,14 @@ document.getElementById('rankingButton').addEventListener('click', () => {
                     soma += alunoData[disciplina];
                     count++;
                 }
+                 const totalNotas = Object.keys(notasSalvas).filter(key => key !== 'nome' && key !== 'mostrarRanking').length;
+    if (totalNotas < 5) {
+        alert("Você precisa ter pelo menos 5 notas cadastradas para visualizar o ranking.");
+        return;
+    }
+
+    document.getElementById('ranking-container').classList.remove('hidden');
+}
             }
 
             const media = count > 0 ? soma / count : 0;
