@@ -1,3 +1,8 @@
+Peço desculpas pela interrupção anterior. Vamos finalizar o código e garantir que todas as funcionalidades estejam implementadas corretamente. Aqui está a versão completa do sistema de notas, incluindo a lógica para mostrar e ocultar o ranking, além de todas as funções necessárias.
+
+### Código Completo do Sistema de Notas
+
+```html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -81,33 +86,6 @@
         .spacing {
             margin-top: 10px;
         }
-        .message span {
-            font-weight: bold;
-        }
-        /* Estilos do checkbox e ranking */
-        #rankingButton {
-            opacity: 0.5;
-        }
-        #rankingCheckboxAlert {
-            color: green;
-        }
-        #notas-salvas {
-            margin-top: 20px;
-            max-height: 300px; /* Defina a altura máxima que você deseja */
-            overflow-y: auto;  /* Adiciona a barra de rolagem vertical */
-            padding-right: 15px; /* Espaçamento para a barra de rolagem */
-        }
-        #notas-salvas ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        #notas-salvas li {
-            background-color: #f0f0f0;
-            margin-bottom: 5px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        /* Estilos da tabela de ranking */
         .ranking-table {
             width: 100%;
             border-collapse: collapse;
@@ -150,7 +128,6 @@
         <div class="form-group">
             <label for="disciplina">Selecione a Disciplina:</label>
             <select id="disciplina" onchange="atualizarCampoNota()">
-                <!-- Lista das disciplinas -->
                 <option value="ADP">Administração de Pessoal (ADP)</option>
                 <option value="ALF">Administração Logística Financeira (ALF)</option>
                 <option value="AMTP">Armamento, Munição e Tiro Policial (AMTP)</option>
@@ -272,20 +249,19 @@
     let notasSalvas = {};
 
     function login() {
-    const matriculaInput = document.getElementById('matricula').value;
-    if (alunos[matriculaInput]) {
-        matriculaAtual = matriculaInput;
-        nomeAlunoAtual = alunos[matriculaAtual];
-        document.getElementById('aluno-nome').textContent = `Bem-vindo(a), ${nomeAlunoAtual}`;
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('notas-form').classList.remove('hidden');
-        carregarNotas();
-        verificarPreferenciaRanking(); // Verifica se o aluno já optou por mostrar o nome no ranking
-    } else {
-        document.getElementById('login-error').classList.remove('hidden');
+        const matriculaInput = document.getElementById('matricula').value;
+        if (alunos[matriculaInput]) {
+            matriculaAtual = matriculaInput;
+            nomeAlunoAtual = alunos[matriculaAtual];
+            document.getElementById('aluno-nome').textContent = `Bem-vindo(a), ${nomeAlunoAtual}`;
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('notas-form').classList.remove('hidden');
+            carregarNotas();
+            verificarPreferenciaRanking(); // Verifica se o aluno já optou por mostrar o nome no ranking
+        } else {
+            document.getElementById('login-error').classList.remove('hidden');
+        }
     }
-}
-
 
     function salvarNota() {
         const disciplina = document.getElementById('disciplina').value;
@@ -393,40 +369,104 @@
         document.getElementById('media-value').textContent = media;
     }
 
-function verificarPreferenciaRanking() {
-    const alunoRef = db.collection("alunos").doc(matriculaAtual);
-    alunoRef.get().then((doc) => {
-        if (doc.exists) {
-            const data = doc.data();
-            const checkbox = document.getElementById('showInRankingCheckbox');
-            checkbox.checked = data.mostrarRanking || false; // Marca o checkbox se a preferência for true
-            checkbox.disabled = data.mostrarRanking; // Desabilita o checkbox se já estiver marcado
-            document.getElementById('rankingButton').disabled = !data.mostrarRanking; // Habilita o botão se a preferência for true
-        }
-    });
-}
-
-function toggleRankingButton() {
-    const checkbox = document.getElementById('showInRankingCheckbox');
-    const rankingButton = document.getElementById('rankingButton');
-
-    if (checkbox.checked) {
-        const confirmacao = confirm('Você deseja que seu nome seja exibido no ranking? Esta ação não pode ser desfeita.');
-        if (confirmacao) {
-            rankingButton.disabled = false;
-            rankingButton.style.opacity = 1;
-            checkbox.disabled = true; // Desabilita o checkbox após confirmação
-            salvarPreferenciaRanking(true); // Salva a escolha no banco de dados
-        } else {
-            checkbox.checked = false; // Reverte a seleção se a confirmação for cancelada
-        }
-    } else {
-        // Não permite desmarcar
-        checkbox.checked = true;
-        alert("Você não pode desmarcar esta opção.");
+    function verificarPreferenciaRanking() {
+        const alunoRef = db.collection("alunos").doc(matriculaAtual);
+        alunoRef.get().then((doc) => {
+            if (doc.exists) {
+                const data = doc.data();
+                const checkbox = document.getElementById('showInRankingCheckbox');
+                checkbox.checked = data.mostrarRanking || false; // Marca o checkbox se a preferência for true
+                checkbox.disabled = data.mostrarRanking; // Desabilita o checkbox se já estiver marcado
+                document.getElementById('rankingButton').disabled = !data.mostrarRanking; // Habilita o botão se a preferência for true
+            }
+        });
     }
-}
 
-    function mostrarRanking() {
-        // Verifica se o aluno logado tem pelo menos 5 notas cadastradas
+    function toggleRankingButton() {
+        const checkbox = document.getElementById('showInRankingCheckbox');
+        const rankingButton = document.getElementById('rankingButton');
+
+        if (checkbox.checked) {
+            const confirmacao = confirm('Você deseja que seu nome seja exibido no ranking? Esta ação não pode ser desfeita.');
+            if (confirmacao) {
+                rankingButton.disabled = false;
+                rankingButton.style.opacity = 1;
+                checkbox.disabled = true; // Desabilita o checkbox após confirmação
+                salvarPreferenciaRanking(true); // Salva a escolha no banco de dados
+            } else {
+                checkbox.checked = false; // Reverte a seleção se a confirmação for cancelada
+            }
+        } else {
+            // Não permite desmarcar
+            checkbox.checked = true;
+            alert("Você não pode desmarcar esta opção.");
+        }
+    }
+
+    function salvarPreferenciaRanking(mostrarRanking) {
+        const alunoRef = db.collection("alunos").doc(matriculaAtual);
+        alunoRef.update({
+            mostrarRanking: mostrarRanking
+        });
+    }
+
+        function mostrarRanking() {
         const totalNotas = contarNotasValidas(notasSalvas);
+        if (totalNotas < 5) {
+            alert("Você precisa ter pelo menos 5 notas cadastradas para visualizar o ranking.");
+            return;
+        }
+
+        const rankingContainer = document.getElementById('ranking-container');
+        const rankingList = document.getElementById('ranking-list');
+        rankingList.innerHTML = ''; // Limpa a lista antes de adicionar novos dados
+
+        // Carrega todos os alunos do Firestore para montar o ranking
+        db.collection("alunos").get().then((querySnapshot) => {
+            const alunosRanking = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const totalNotas = contarNotasValidas(data);
+                if (data.mostrarRanking && totalNotas > 0) {
+                    const media = calcularMediaNotas(data).toFixed(2);
+                    alunosRanking.push({ nome: data.nome, media: media });
+                }
+            });
+
+            // Ordena o ranking pela média
+            alunosRanking.sort((a, b) => b.media - a.media);
+
+            // Adiciona os alunos ao ranking
+            alunosRanking.forEach(aluno => {
+                const li = document.createElement('li');
+                li.textContent = `${aluno.nome}: ${aluno.media}`;
+                rankingList.appendChild(li);
+            });
+
+            rankingContainer.classList.remove('hidden');
+        }).catch((error) => {
+            console.error("Erro ao carregar ranking:", error);
+        });
+    }
+
+    function calcularMediaNotas(notas) {
+        let soma = 0;
+        let count = 0;
+
+        for (const disciplina in notas) {
+            if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
+                soma += notas[disciplina];
+                count++;
+            }
+        }
+
+        return count > 0 ? (soma / count) : 0;
+    }
+
+    function ocultarRanking() {
+        const rankingContainer = document.getElementById('ranking-container');
+        rankingContainer.classList.add('hidden');
+    }
+</script>
+</body>
+</html>
