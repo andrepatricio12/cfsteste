@@ -272,18 +272,20 @@
     let notasSalvas = {};
 
     function login() {
-        const matriculaInput = document.getElementById('matricula').value;
-        if (alunos[matriculaInput]) {
-            matriculaAtual = matriculaInput;
-            nomeAlunoAtual = alunos[matriculaAtual];
-            document.getElementById('aluno-nome').textContent = `Bem-vindo(a), ${nomeAlunoAtual}`;
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('notas-form').classList.remove('hidden');
-            carregarNotas();
-        } else {
-            document.getElementById('login-error').classList.remove('hidden');
-        }
+    const matriculaInput = document.getElementById('matricula').value;
+    if (alunos[matriculaInput]) {
+        matriculaAtual = matriculaInput;
+        nomeAlunoAtual = alunos[matriculaAtual];
+        document.getElementById('aluno-nome').textContent = `Bem-vindo(a), ${nomeAlunoAtual}`;
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('notas-form').classList.remove('hidden');
+        carregarNotas();
+        verificarPreferenciaRanking(); // Verifica se o aluno já optou por mostrar o nome no ranking
+    } else {
+        document.getElementById('login-error').classList.remove('hidden');
     }
+}
+
 
     function salvarNota() {
         const disciplina = document.getElementById('disciplina').value;
@@ -391,7 +393,20 @@
         document.getElementById('media-value').textContent = media;
     }
 
-    function toggleRankingButton() {
+function verificarPreferenciaRanking() {
+    const alunoRef = db.collection("alunos").doc(matriculaAtual);
+    alunoRef.get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            const checkbox = document.getElementById('showInRankingCheckbox');
+            checkbox.checked = data.mostrarRanking || false; // Marca o checkbox se a preferência for true
+            checkbox.disabled = data.mostrarRanking; // Desabilita o checkbox se já estiver marcado
+            document.getElementById('rankingButton').disabled = !data.mostrarRanking; // Habilita o botão se a preferência for true
+        }
+    });
+}
+
+function toggleRankingButton() {
     const checkbox = document.getElementById('showInRankingCheckbox');
     const rankingButton = document.getElementById('rankingButton');
 
