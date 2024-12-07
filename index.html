@@ -555,6 +555,10 @@ async function carregarRanking() {
         console.error("Erro ao carregar o ranking:", error);
         alert("Erro ao carregar o ranking. Detalhes: " + error.message);  // Exibe o erro específico
     }
+    console.log("Carregando dados do Firestore...");
+const querySnapshot = await db.collection('alunos').get();
+console.log("Dados retornados do Firestore:", querySnapshot.docs);
+
 }
 
 function mostrarRanking() {
@@ -567,9 +571,6 @@ function mostrarRanking() {
     // Chama a função para carregar o ranking
     carregarRanking();
 }
-
-
-
 
 function ocultarRanking() {
     const rankingContainer = document.getElementById('ranking-container');
