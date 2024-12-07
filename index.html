@@ -501,11 +501,11 @@ async function carregarRanking() {
         querySnapshot.forEach((doc) => {
             const data = doc.data();
 
-            // Validar se o documento contém os campos necessários
-            if (data && data.mostrarRanking) {
+            // Validar campos obrigatórios
+            if (data && data.mostrarRanking && data.nome) {
                 const notas = Object.keys(data)
-                    .filter(key => key !== 'nome' && key !== 'mostrarRanking')
-                    .map(key => data[key]);
+                    .filter((key) => !['nome', 'mostrarRanking'].includes(key))
+                    .map((key) => data[key]);
 
                 // Calcular a média com segurança
                 const media = notas.length > 0
@@ -513,17 +513,17 @@ async function carregarRanking() {
                     : '0.000';
 
                 rankingData.push({
-                    nome: data.nome || 'Sem Nome',
+                    nome: data.nome,
                     notasSalvas: notas.length,
                     media: media
                 });
             }
         });
 
-        // Ordenar os dados do ranking
+        // Ordenar os dados do ranking por média decrescente
         rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
 
-        // Popular a tabela do ranking
+        // Exibir os dados na tabela
         rankingData.forEach((aluno, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -534,12 +534,17 @@ async function carregarRanking() {
             `;
             rankingBody.appendChild(row);
         });
+
+        if (rankingData.length === 0) {
+            rankingBody.innerHTML = '<tr><td colspan="4">Nenhum aluno no ranking.</td></tr>';
+        }
+
+        console.log('Ranking carregado com sucesso.');
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
         alert('Ocorreu um erro ao carregar o ranking. Tente novamente mais tarde.');
     }
 }
-
 
 
  function mostrarRanking() {
