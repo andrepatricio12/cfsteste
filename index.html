@@ -511,7 +511,7 @@ async function carregarRanking() {
     try {
         console.log("Carregando dados do Firestore...");
         const querySnapshot = await db.collection('alunos').get();
-        console.log("Dados retornados do Firestore:", querySnapshot.docs);  // Adicione este log
+        console.log("Dados retornados do Firestore:", querySnapshot.docs);  // Veja os dados
 
         let rankingData = [];
         let naoExibirCount = 0;
@@ -555,11 +555,8 @@ async function carregarRanking() {
         console.error("Erro ao carregar o ranking:", error);
         alert("Erro ao carregar o ranking. Detalhes: " + error.message);  // Exibe o erro específico
     }
-    console.log("Carregando dados do Firestore...");
-const querySnapshot = await db.collection('alunos').get();
-console.log("Dados retornados do Firestore:", querySnapshot.docs);
-
 }
+
 
 async function mostrarRanking() {
     console.log("Botão 'Ver Ranking' clicado!");  // Para ver se a função é chamada
