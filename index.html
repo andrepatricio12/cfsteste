@@ -247,6 +247,9 @@
 
     /* Ajustar largura da coluna "Número de Notas" */
     #<style>
+        #ranking-container {
+    display: none; /* Corrige para não aparecer por padrão */
+}
     /* Ajustar largura da coluna "Número de Notas" */
     #ranking-container table th:nth-child(3),
     #ranking-container table td:nth-child(3) {
@@ -568,16 +571,17 @@ async function carregarRanking() {
 
 
 
-  function mostrarRanking() {
+ function mostrarRanking() {
     const rankingContainer = document.getElementById('ranking-container');
+    rankingContainer.classList.remove('hidden');
+    rankingContainer.style.display = 'block'; // Garante visibilidade
     carregarRanking()
-        .then(() => {
-            rankingContainer.classList.remove('hidden');
-        })
+        .then(() => console.log('Ranking carregado'))
         .catch((error) => {
             console.error('Erro ao carregar o ranking:', error);
-            alert('Não foi possível carregar o ranking. Tente novamente mais tarde.');
+            alert('Não foi possível carregar o ranking.');
         });
+}
 }// Recupera os alunos que optaram por aparecer no ranking
 db.collection("alunos").where("mostrarRanking", "==", true).get()
     .then((querySnapshot) => {
@@ -649,8 +653,11 @@ db.collection("alunos").where("mostrarRanking", "==", true).get()
     
 
     function ocultarRanking() {
-        document.getElementById('ranking-container').classList.add('hidden');
-    }
+    const rankingContainer = document.getElementById('ranking-container');
+    rankingContainer.classList.add('hidden');
+    rankingContainer.style.display = 'none'; // Garante que o display seja ajustado
+}
+
 </script>
 </body>
 </html>
