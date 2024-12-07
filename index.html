@@ -113,19 +113,19 @@
         <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
     <table id="ranking-table" class="ranking-table">
-    <thead>
-        <tr>
-            <th>Posição</th>
-            <th>Nome</th>
-            <th>Nº de Notas</th>
-            <th>Média</th>
-        </tr>
-    </thead>
-    <tbody id="ranking-body"></tbody>
-</table>
-
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>Nº de Notas</th>
+                <th>Média</th>
+            </tr>
+        </thead>
+        <tbody id="ranking-body"></tbody>
+    </table>
     <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
+
     </style>
     <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -503,7 +503,7 @@ function salvarPreferenciaRanking(mostrarRanking) {
 }
 
 async function carregarRanking() {
-    const rankingContainer = document.getElementById('ranking-body'); // Corpo da tabela
+    const rankingBody = document.getElementById('ranking-body'); // Corpo da tabela
     const naoExibirContainer = document.getElementById('nao-exibir-container');
 
     try {
@@ -514,6 +514,7 @@ async function carregarRanking() {
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             if (data.mostrarRanking) {
+                // Calcula as notas e a média com 3 casas decimais
                 const grades = Object.keys(data)
                     .filter(key => key !== "nome" && key !== "mostrarRanking")
                     .map(key => data[key]);
@@ -532,8 +533,8 @@ async function carregarRanking() {
         // Ordena por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
-        // Limpa o ranking anterior
-        rankingContainer.innerHTML = '';
+        // Limpa o corpo da tabela
+        rankingBody.innerHTML = '';
 
         // Preenche o ranking com as novas informações
         rankingData.forEach((item, index) => {
@@ -544,7 +545,7 @@ async function carregarRanking() {
                 <td>${item.notasSalvas}</td>
                 <td>${item.media}</td> <!-- Adiciona a média -->
             `;
-            rankingContainer.appendChild(row);
+            rankingBody.appendChild(row);
         });
 
         naoExibirContainer.innerHTML = `
@@ -555,17 +556,20 @@ async function carregarRanking() {
     }
 }
 
+
   function mostrarRanking() {
-    // Verifica se o aluno logado tem pelo menos 5 notas cadastradas
     const totalNotas = contarNotasValidas(notasSalvas);
     if (totalNotas < 5) {
         alert("Você precisa ter pelo menos 5 notas cadastradas para visualizar o ranking.");
         return;
-    } if (!notasSalvas.mostrarRanking) {
+    }
+    if (!notasSalvas.mostrarRanking) {
         alert("Você não optou por aparecer no ranking.");
         return;
     }
     carregarRanking();
+    document.getElementById('ranking-container').classList.remove('hidden');
+}
 
     // Recupera os alunos que optaram por aparecer no ranking
     db.collection("alunos").where("mostrarRanking", "==", true).get()
