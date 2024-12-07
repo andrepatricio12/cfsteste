@@ -555,18 +555,22 @@ async function carregarRanking() {
             : `<span>Nenhum aluno optou por não aparecer no ranking.</span>`;
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
-        alert('Ocorreu um erro ao carregar o ranking. Por favor, tente novamente mais tarde.');
+        throw new Error('Falha ao carregar o ranking.'); // Relança o erro para ser tratado na função `mostrarRanking`
     }
 }
 
-function mostrarRanking() {
+async function mostrarRanking() {
     const rankingContainer = document.getElementById('ranking-container');
-    rankingContainer.classList.remove('hidden');
-    rankingContainer.style.display = 'block'; // Garante visibilidade
-    carregarRanking().catch((error) => {
-        console.error('Erro ao carregar o ranking:', error);
-        alert('Não foi possível carregar o ranking.');
-    });
+
+    try {
+        // Carregar o ranking antes de exibi-lo
+        await carregarRanking();
+        rankingContainer.classList.remove('hidden');
+        rankingContainer.style.display = 'block'; // Garante visibilidade
+    } catch (error) {
+        console.error('Erro ao exibir o ranking:', error);
+        alert('Não foi possível carregar o ranking. Por favor, tente novamente.');
+    }
 }
 
 function ocultarRanking() {
@@ -574,6 +578,7 @@ function ocultarRanking() {
     rankingContainer.classList.add('hidden');
     rankingContainer.style.display = 'none'; // Garante que o display seja ajustado
 }
+
 
 
 </script>
