@@ -198,7 +198,7 @@
         <div class="message" id="media-container">Sua média é: <span id="media-value"></span></div>
 
         <div class="button-group spacing">
-            <button id="rankingButton" disabled onclick="mostrarRanking()">Ver Ranking</button>
+            <button id="rankingButton" onclick="mostrarRanking()">Ver Ranking</button>
         </div>
 
         <div class="message hidden" id="ranking-container">
@@ -570,72 +570,7 @@ async function mostrarRanking() {
         console.error('Erro ao exibir o ranking:', error);
         alert('Não foi possível carregar o ranking. Por favor, tente novamente.');
     }
-}// Recupera os alunos que optaram por aparecer no ranking
-db.collection("alunos").where("mostrarRanking", "==", true).get()
-    .then((querySnapshot) => {
-        const rankingList = document.getElementById('ranking-list');
-        rankingList.innerHTML = ''; // Limpa o ranking anterior
-        const alunosRanking = [];
 
-        // Processa os dados de cada aluno
-        querySnapshot.forEach((doc) => {
-            const alunoData = doc.data();
-            const notas = Object.keys(alunoData)
-                .filter((key) => key !== "nome" && key !== "mostrarRanking")
-                .map((key) => alunoData[key]);
-
-            const media = notas.length > 0 
-                ? (notas.reduce((soma, nota) => soma + nota, 0) / notas.length).toFixed(3)
-                : 0;
-
-            alunosRanking.push({
-                nome: alunoData.nome,
-                media: parseFloat(media),
-                notasSalvas: notas.length,
-            });
-        });
-
-        // Ordena o ranking pela média em ordem decrescente
-        alunosRanking.sort((a, b) => b.media - a.media);
-
-        // Cria a tabela para exibição do ranking
-        const tabela = document.createElement('table');
-        tabela.classList.add('ranking-table');
-
-        // Cabeçalho da tabela
-        const thead = document.createElement('thead');
-        thead.innerHTML = `
-            <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>Nº de Notas</th>
-                <th>Média</th>
-            </tr>
-        `;
-        tabela.appendChild(thead);
-
-        // Corpo da tabela
-        const tbody = document.createElement('tbody');
-        alunosRanking.forEach((aluno, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${index + 1}º</td>
-                <td>${aluno.nome}</td>
-                <td>${aluno.notasSalvas}</td>
-                <td>${aluno.media}</td>
-            `;
-            tbody.appendChild(row);
-        });
-        tabela.appendChild(tbody);
-
-        // Exibe a tabela no ranking
-        rankingList.appendChild(tabela);
-        document.getElementById('ranking-container').classList.remove('hidden');
-    })
-    .catch((error) => {
-        console.error("Erro ao carregar o ranking:", error);
-        alert("Não foi possível carregar o ranking. Tente novamente mais tarde.");
-    });
 
 
 function ocultarRanking() {
