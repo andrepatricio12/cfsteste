@@ -112,18 +112,18 @@
         }
         <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
-    <table id="ranking-table">
-        <thead>
-            <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>Nº de Notas</th>
-                <th>Média</th>
-            </tr>
-        </thead>
-        <tbody id="ranking-body">
-        </tbody>
-    </table>
+    <table id="ranking-table" class="ranking-table">
+    <thead>
+        <tr>
+            <th>Posição</th>
+            <th>Nome</th>
+            <th>Nº de Notas</th>
+            <th>Média</th>
+        </tr>
+    </thead>
+    <tbody id="ranking-body"></tbody>
+</table>
+
     <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
     </style>
@@ -261,6 +261,12 @@
         white-space: nowrap; /* Impede a quebra de linha */
         text-align: left;
     }
+        .ranking-table th:nth-child(4),
+.ranking-table td:nth-child(4) {
+    width: 100px; /* Define largura específica para a coluna de média */
+    text-align: center;
+}
+
 
     /* Outras colunas */
     #ranking-container table th:nth-child(1),
@@ -497,7 +503,7 @@ function salvarPreferenciaRanking(mostrarRanking) {
 }
 
 async function carregarRanking() {
-    const rankingContainer = document.getElementById('ranking-list');
+    const rankingContainer = document.getElementById('ranking-body'); // Corpo da tabela
     const naoExibirContainer = document.getElementById('nao-exibir-container');
 
     try {
@@ -508,11 +514,11 @@ async function carregarRanking() {
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             if (data.mostrarRanking) {
-                // Calcula as notas e a média com 3 casas decimais
                 const grades = Object.keys(data)
                     .filter(key => key !== "nome" && key !== "mostrarRanking")
                     .map(key => data[key]);
                 const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+
                 rankingData.push({
                     nome: data.nome,
                     media: average.toFixed(3), // Média com 3 casas decimais
@@ -526,50 +532,28 @@ async function carregarRanking() {
         // Ordena por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
-        // Criação da tabela
-        const tabela = document.createElement('table');
-        tabela.classList.add('ranking-table');
+        // Limpa o ranking anterior
+        rankingContainer.innerHTML = '';
 
-        const thead = document.createElement('thead');
-        thead.innerHTML = `
-            <tr>
-                <th>Posição</th>
-                <th>Nome</th>
-                <th>Nº de Notas</th>
-                <th>Média</th>
-            </tr>
-        `;
-        tabela.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
+        // Preenche o ranking com as novas informações
         rankingData.forEach((item, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${index + 1}º</td>
                 <td>${item.nome}</td>
                 <td>${item.notasSalvas}</td>
-                <td>${item.media}</td>
+                <td>${item.media}</td> <!-- Adiciona a média -->
             `;
-            tbody.appendChild(row);
+            rankingContainer.appendChild(row);
         });
-
-        tabela.appendChild(tbody);
-        rankingContainer.innerHTML = '';
-        rankingContainer.appendChild(tabela);
 
         naoExibirContainer.innerHTML = `
             <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
         `;
-
-        // Ajusta a rolagem para o topo
-        document.getElementById('ranking-container').scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
     }
 }
-
-
-
 
   function mostrarRanking() {
     // Verifica se o aluno logado tem pelo menos 5 notas cadastradas
