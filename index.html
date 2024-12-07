@@ -614,6 +614,7 @@ async function carregarRanking() {
                     <th>Posição</th>
                     <th>Nome</th>
                     <th>Nº de Notas</th>
+                    <th>Média</th>
                 </tr>
             `;
             tabela.appendChild(thead);
@@ -639,10 +640,6 @@ async function carregarRanking() {
             console.error("Erro ao carregar o ranking:", error);
         });
 }
-
-
-
-
 
 
     function ocultarRanking() {
