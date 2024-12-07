@@ -533,6 +533,9 @@ async function carregarRanking() {
             }
         });
 
+        // Exibe no console para diagnóstico
+        console.log("Alunos que optaram por não aparecer no ranking:", naoExibirCount);
+
         // Ordena o ranking por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
@@ -549,14 +552,21 @@ async function carregarRanking() {
         });
 
         // Atualiza o contador de alunos que não apareceram no ranking
-        naoExibirContainer.innerHTML = `
-            <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
-        `;
+        if (naoExibirCount > 0) {
+            naoExibirContainer.innerHTML = `
+                <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
+            `;
+        } else {
+            naoExibirContainer.innerHTML = `
+                <span>Nenhum aluno optou por não aparecer no ranking.</span>
+            `;
+        }
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
         alert('Ocorreu um erro ao carregar o ranking. Por favor, tente novamente mais tarde.');
     }
 }
+
 
 
 
