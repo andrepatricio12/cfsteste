@@ -570,8 +570,6 @@ async function mostrarRanking() {
     } catch (error) {
         console.error('Erro ao exibir o ranking:', error);
         alert('Não foi possível carregar o ranking. Por favor, tente novamente.');
-    }
-}
     }// Recupera os alunos que optaram por aparecer no ranking
 db.collection("alunos").where("mostrarRanking", "==", true).get()
     .then((querySnapshot) => {
