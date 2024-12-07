@@ -216,17 +216,24 @@
     </div>
 </div>
     <style>
-    .ranking-table {
+   #ranking-container {
+    max-height: 70vh;
+    overflow-y: auto; /* Adiciona rolagem vertical */
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.ranking-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    overflow-x: auto; /* Adiciona rolagem horizontal para tabelas largas */
+    margin-top: 10px;
 }
 
 .ranking-table th, .ranking-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
+    white-space: nowrap; /* Evita quebra de linha */
 }
 
 .ranking-table th {
@@ -234,11 +241,6 @@
     color: white;
 }
 
-#ranking-container {
-    max-height: 70vh;
-    overflow-y: auto; /* Adiciona rolagem vertical */
-    margin-top: 20px;
-}
 
         <style>
     /* Outros estilos existentes */
@@ -506,6 +508,7 @@ async function carregarRanking() {
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             if (data.mostrarRanking) {
+                // Calcula as notas e a média com 3 casas decimais
                 const grades = Object.keys(data)
                     .filter(key => key !== "nome" && key !== "mostrarRanking")
                     .map(key => data[key]);
@@ -520,8 +523,10 @@ async function carregarRanking() {
             }
         });
 
+        // Ordena por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
+        // Criação da tabela
         const tabela = document.createElement('table');
         tabela.classList.add('ranking-table');
 
