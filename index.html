@@ -636,15 +636,6 @@ async function carregarRanking() {
     console.log("Dados obtidos do Firebase:", querySnapshot.docs.map(doc => doc.data()));
 console.log("Ranking processado:", rankingData);
 
-    const rankingContainer = document.getElementById('ranking-container');
-    rankingContainer.classList.remove('hidden');
-    rankingContainer.style.display = 'block';
-
-    carregarRanking().then(() => {
-        rankingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }).catch((error) => {
-        console.error('Erro ao mostrar o ranking:', error);
-    });
 }
 
 }
