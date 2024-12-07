@@ -552,7 +552,7 @@ async function carregarRanking() {
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            
+
             // Verifica se o aluno optou por aparecer no ranking
             if (data.mostrarRanking && data.nome) {
                 const notas = Object.keys(data)
@@ -565,6 +565,7 @@ async function carregarRanking() {
 
                 rankingData.push({
                     nome: data.nome,
+                    matricula: doc.id, // Usa a matrícula para desempate
                     notasSalvas: notas.length,
                     media: media
                 });
@@ -574,8 +575,16 @@ async function carregarRanking() {
             }
         });
 
-        // Ordena o ranking por média decrescente
-        rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
+        // Ordena o ranking por média (decrescente) e, em caso de empate, pela ordem das matrículas fornecidas
+        rankingData.sort((a, b) => {
+            if (parseFloat(b.media) === parseFloat(a.media)) {
+                // Desempate usando a ordem das matrículas no objeto 'alunos'
+                const indexA = Object.keys(alunos).indexOf(a.matricula);
+                const indexB = Object.keys(alunos).indexOf(b.matricula);
+                return indexA - indexB; // Ordena pela posição da matrícula na lista
+            }
+            return parseFloat(b.media) - parseFloat(a.media); // Ordena pela média
+        });
 
         // Preenche a tabela com os dados do ranking
         if (rankingData.length > 0) {
