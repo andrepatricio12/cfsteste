@@ -434,10 +434,9 @@
             checkbox.disabled = mostrarRanking; // Desativa se já marcado
 
             const totalNotas = contarNotasValidas(notasSalvas);
-            const rankingButton = document.getElementById('rankingButton');
-            rankingButton.disabled = !(totalNotas >= 5 && mostrarRanking);
-            rankingButton.style.opacity = rankingButton.disabled ? 0.5 : 1;
-        }
+const rankingButton = document.getElementById('rankingButton');
+rankingButton.disabled = !(totalNotas >= 5 && mostrarRanking);
+rankingButton.style.opacity = rankingButton.disabled ? 0.5 : 1;
     }).catch((error) => {
         console.error("Erro ao carregar notas:", error);
     });
@@ -558,18 +557,17 @@ async function carregarRanking() {
     }
 }
 
-async function mostrarRanking() {
+function mostrarRanking() {
+    console.log("Botão 'Ver Ranking' clicado!");  // Verifique se a função é chamada.
+    
     const rankingContainer = document.getElementById('ranking-container');
+    rankingContainer.classList.remove('hidden');
+    rankingContainer.style.display = 'block'; // Garante visibilidade
 
-    try {
-        // Carregar o ranking antes de exibi-lo
-        await carregarRanking();
-        rankingContainer.classList.remove('hidden');
-        rankingContainer.style.display = 'block'; // Garante visibilidade
-    } catch (error) {
-        console.error('Erro ao exibir o ranking:', error);
-        alert('Não foi possível carregar o ranking. Por favor, tente novamente.');
-    }
+    // Chama a função para carregar o ranking
+    carregarRanking();
+}
+
 
 
 
