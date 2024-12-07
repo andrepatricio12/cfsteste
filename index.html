@@ -577,13 +577,14 @@ async function carregarRanking() {
 
         // Ordena o ranking por média (decrescente) e, em caso de empate, pela ordem das matrículas fornecidas
         rankingData.sort((a, b) => {
+            // Primeira ordenação: pela média (decrescente)
             if (parseFloat(b.media) === parseFloat(a.media)) {
-                // Desempate usando a ordem das matrículas no objeto 'alunos'
+                // Desempate pela posição da matrícula na lista 'alunos'
                 const indexA = Object.keys(alunos).indexOf(a.matricula);
                 const indexB = Object.keys(alunos).indexOf(b.matricula);
-                return indexA - indexB; // Ordena pela posição da matrícula na lista
+                return indexA - indexB; // Ordena pela posição da matrícula no objeto 'alunos'
             }
-            return parseFloat(b.media) - parseFloat(a.media); // Ordena pela média
+            return parseFloat(b.media) - parseFloat(a.media); // Ordena pela média (decrescente)
         });
 
         // Preenche a tabela com os dados do ranking
