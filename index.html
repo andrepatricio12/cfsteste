@@ -561,8 +561,8 @@ console.log("Dados retornados do Firestore:", querySnapshot.docs);
 
 }
 
-function mostrarRanking() {
-    console.log("Botão 'Ver Ranking' clicado!");  // Verifique se a função é chamada.
+async function mostrarRanking() {
+    console.log("Botão 'Ver Ranking' clicado!");  // Para ver se a função é chamada
     
     const rankingContainer = document.getElementById('ranking-container');
     rankingContainer.classList.remove('hidden');
