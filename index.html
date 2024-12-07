@@ -543,6 +543,9 @@ async function carregarRanking() {
         console.error('Erro ao carregar o ranking:', error);
         alert('Não foi possível carregar o ranking. Por favor, tente novamente mais tarde.');
     }
+    console.log("Dados obtidos do Firebase:", querySnapshot.docs.map(doc => doc.data()));
+console.log("Ranking processado:", rankingData);
+
 }
 
     function mostrarRanking() {
