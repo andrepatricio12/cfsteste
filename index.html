@@ -110,18 +110,18 @@
     border-radius: 5px;
 }
         }
-        <div class="message hidden" id="ranking-container">
+       <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
-    <table id="ranking-table">
+    <table id="ranking-table" class="ranking-table">
         <thead>
             <tr>
                 <th>Posição</th>
                 <th>Nome</th>
                 <th>Nº de Notas</th>
+                <th>Média</th>
             </tr>
         </thead>
-        <tbody id="ranking-body">
-        </tbody>
+        <tbody id="ranking-body"></tbody>
     </table>
     <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
@@ -491,7 +491,7 @@ function salvarPreferenciaRanking(mostrarRanking) {
 }
 
 async function carregarRanking() {
-    const rankingBody = document.getElementById('ranking-body'); // Corpo da tabela
+    const rankingBody = document.getElementById('ranking-body');
     rankingBody.innerHTML = ''; // Limpa o ranking existente
 
     try {
@@ -501,12 +501,14 @@ async function carregarRanking() {
         querySnapshot.forEach((doc) => {
             const data = doc.data();
 
-            if (data.mostrarRanking) {
+            // Validar se o documento contém os campos necessários
+            if (data && data.mostrarRanking) {
                 const notas = Object.keys(data)
-                    .filter((key) => !['nome', 'mostrarRanking'].includes(key))
-                    .map((key) => data[key]);
+                    .filter(key => key !== 'nome' && key !== 'mostrarRanking')
+                    .map(key => data[key]);
 
-                const media = notas.length > 0 
+                // Calcular a média com segurança
+                const media = notas.length > 0
                     ? (notas.reduce((sum, nota) => sum + nota, 0) / notas.length).toFixed(3)
                     : '0.000';
 
@@ -518,10 +520,10 @@ async function carregarRanking() {
             }
         });
 
-        // Ordenar por média decrescente
+        // Ordenar os dados do ranking
         rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
 
-        // Popular a tabela
+        // Popular a tabela do ranking
         rankingData.forEach((aluno, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -532,13 +534,12 @@ async function carregarRanking() {
             `;
             rankingBody.appendChild(row);
         });
-
-        console.log('Ranking carregado com sucesso.');
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
-        alert('Não foi possível carregar o ranking. Por favor, tente novamente mais tarde.');
+        alert('Ocorreu um erro ao carregar o ranking. Tente novamente mais tarde.');
     }
 }
+
 
 
  function mostrarRanking() {
@@ -549,9 +550,10 @@ async function carregarRanking() {
     carregarRanking().then(() => {
         rankingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }).catch((error) => {
-        console.error('Erro ao exibir o ranking:', error);
+        console.error('Erro ao mostrar o ranking:', error);
     });
 }
+
 
 
 
