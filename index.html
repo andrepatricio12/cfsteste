@@ -491,19 +491,19 @@ function salvarPreferenciaRanking(mostrarRanking) {
 }
 
 async function carregarRanking() {
-    const rankingBody = document.getElementById('ranking-body');
+    const rankingBody = document.getElementById('ranking-body'); // Corpo da tabela
     rankingBody.innerHTML = ''; // Limpa o ranking existente
 
     try {
         const querySnapshot = await db.collection('alunos').get();
         let rankingData = [];
 
-        // Processa os dados dos alunos
         querySnapshot.forEach((doc) => {
             const data = doc.data();
+
             if (data.mostrarRanking) {
                 const notas = Object.keys(data)
-                    .filter((key) => key !== 'nome' && key !== 'mostrarRanking')
+                    .filter((key) => !['nome', 'mostrarRanking'].includes(key))
                     .map((key) => data[key]);
 
                 const media = notas.length > 0 
@@ -511,7 +511,7 @@ async function carregarRanking() {
                     : '0.000';
 
                 rankingData.push({
-                    nome: data.nome,
+                    nome: data.nome || 'Sem Nome',
                     notasSalvas: notas.length,
                     media: media
                 });
@@ -519,9 +519,9 @@ async function carregarRanking() {
         });
 
         // Ordenar por média decrescente
-        rankingData.sort((a, b) => b.media - a.media);
+        rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
 
-        // Adicionar os dados ao corpo da tabela
+        // Popular a tabela
         rankingData.forEach((aluno, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -532,21 +532,24 @@ async function carregarRanking() {
             `;
             rankingBody.appendChild(row);
         });
+
+        console.log('Ranking carregado com sucesso.');
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
-        alert('Ocorreu um erro ao carregar o ranking. Tente novamente mais tarde.');
+        alert('Não foi possível carregar o ranking. Por favor, tente novamente mais tarde.');
     }
 }
+
 
  function mostrarRanking() {
     const rankingContainer = document.getElementById('ranking-container');
     rankingContainer.classList.remove('hidden');
-    rankingContainer.style.display = 'block'; // Garante visibilidade
+    rankingContainer.style.display = 'block';
+
     carregarRanking().then(() => {
         rankingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }).catch((error) => {
-        console.error('Erro ao carregar o ranking:', error);
-        alert('Não foi possível carregar o ranking.');
+        console.error('Erro ao exibir o ranking:', error);
     });
 }
 
