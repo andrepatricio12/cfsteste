@@ -504,40 +504,40 @@ function salvarPreferenciaRanking(mostrarRanking) {
 }
 
 async function carregarRanking() {
-    const rankingBody = document.getElementById('ranking-body'); // Corpo da tabela
-    const naoExibirContainer = document.getElementById('nao-exibir-container'); // Contador de não exibidos
-    rankingBody.innerHTML = ''; // Limpa o ranking existente
-    naoExibirContainer.innerHTML = ''; // Limpa o contador existente
+    const rankingBody = document.getElementById('ranking-body');
+    const naoExibirContainer = document.getElementById('nao-exibir-container');
+    rankingBody.innerHTML = '';
+    naoExibirContainer.innerHTML = '';
 
     try {
+        console.log("Carregando dados do Firestore...");
         const querySnapshot = await db.collection('alunos').get();
+        console.log("Dados retornados do Firestore:", querySnapshot.docs);  // Adicione este log
+
         let rankingData = [];
         let naoExibirCount = 0;
 
-        // Processa cada documento retornado do Firebase
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             if (data.mostrarRanking) {
                 const notas = Object.keys(data)
-                    .filter((key) => key !== 'nome' && key !== 'mostrarRanking') // Filtra apenas as notas
+                    .filter((key) => key !== 'nome' && key !== 'mostrarRanking')
                     .map((key) => data[key]);
 
                 const media = notas.reduce((sum, nota) => sum + nota, 0) / notas.length;
 
                 rankingData.push({
                     nome: data.nome,
-                    media: media.toFixed(3), // Média com 3 casas decimais
+                    media: media.toFixed(3),
                     notasSalvas: notas.length,
                 });
             } else {
-                naoExibirCount++; // Contabiliza os alunos que não optaram por aparecer no ranking
+                naoExibirCount++;
             }
         });
 
-        // Ordena o ranking por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
-        // Preenche o corpo da tabela com os dados processados
         rankingData.forEach((aluno, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -549,13 +549,12 @@ async function carregarRanking() {
             rankingBody.appendChild(row);
         });
 
-        // Atualiza o contador de alunos que não apareceram no ranking
         naoExibirContainer.innerHTML = naoExibirCount > 0
             ? `<span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>`
             : `<span>Nenhum aluno optou por não aparecer no ranking.</span>`;
     } catch (error) {
-        console.error('Erro ao carregar o ranking:', error);
-        throw new Error('Falha ao carregar o ranking.');
+        console.error("Erro ao carregar o ranking:", error);
+        alert("Erro ao carregar o ranking. Detalhes: " + error.message);  // Exibe o erro específico
     }
 }
 
