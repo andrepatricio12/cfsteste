@@ -491,34 +491,40 @@ function salvarPreferenciaRanking(mostrarRanking) {
 }
 
 async function carregarRanking() {
-        const rankingBody = document.getElementById('ranking-body');
-        rankingBody.innerHTML = '';
+    const rankingBody = document.getElementById('ranking-body');
+    rankingBody.innerHTML = ''; // Limpa o ranking existente
 
-        try {
-            const querySnapshot = await db.collection('alunos').get();
-            let rankingData = [];
+    try {
+        const querySnapshot = await db.collection('alunos').get();
+        let rankingData = [];
 
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                if (data.mostrarRanking) {
-                    const notas = Object.keys(data)
-                        .filter(key => !['nome', 'mostrarRanking'].includes(key))
-                        .map(key => data[key]);
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
 
-                    const media = notas.length > 0
-                        ? (notas.reduce((sum, nota) => sum + nota, 0) / notas.length).toFixed(3)
-                        : '0.000';
+            // Verifica se o aluno optou por aparecer no ranking e se tem um nome válido
+            if (data.mostrarRanking && data.nome) {
+                const notas = Object.keys(data)
+                    .filter((key) => key !== 'nome' && key !== 'mostrarRanking') // Filtra apenas as notas
+                    .map((key) => data[key]);
 
-                    rankingData.push({
-                        nome: data.nome,
-                        notasSalvas: notas.length,
-                        media: media
-                    });
-                }
-            });
+                // Calcula a média das notas
+                const media = notas.length > 0
+                    ? (notas.reduce((sum, nota) => sum + nota, 0) / notas.length).toFixed(3)
+                    : '0.000';
 
-            rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
+                rankingData.push({
+                    nome: data.nome,
+                    notasSalvas: notas.length,
+                    media: media
+                });
+            }
+        });
 
+        // Ordena os dados do ranking por média em ordem decrescente
+        rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
+
+        // Preenche a tabela com os dados do ranking
+        if (rankingData.length > 0) {
             rankingData.forEach((aluno, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -529,30 +535,35 @@ async function carregarRanking() {
                 `;
                 rankingBody.appendChild(row);
             });
-
-            if (rankingData.length === 0) {
-                rankingBody.innerHTML = '<tr><td colspan="4">Nenhum aluno no ranking.</td></tr>';
-            }
-        } catch (error) {
-            console.error('Erro ao carregar o ranking:', error);
-            alert('Não foi possível carregar o ranking.');
+        } else {
+            // Exibe mensagem caso o ranking esteja vazio
+            rankingBody.innerHTML = '<tr><td colspan="4">Nenhum aluno no ranking.</td></tr>';
         }
+    } catch (error) {
+        console.error('Erro ao carregar o ranking:', error);
+        alert('Não foi possível carregar o ranking. Por favor, tente novamente mais tarde.');
     }
+}
 
     function mostrarRanking() {
-        const rankingContainer = document.getElementById('ranking-container');
-        rankingContainer.classList.remove('hidden');
-        rankingContainer.style.display = 'block';
-        carregarRanking().then(() => {
-            rankingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    }
+    const rankingContainer = document.getElementById('ranking-container');
+    rankingContainer.classList.remove('hidden');
+    rankingContainer.style.display = 'block';
+
+    carregarRanking().then(() => {
+        rankingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }).catch((error) => {
+        console.error('Erro ao mostrar o ranking:', error);
+    });
+}
+
 
     function ocultarRanking() {
-        const rankingContainer = document.getElementById('ranking-container');
-        rankingContainer.classList.add('hidden');
-        rankingContainer.style.display = 'none';
-    }
+    const rankingContainer = document.getElementById('ranking-container');
+    rankingContainer.classList.add('hidden');
+    rankingContainer.style.display = 'none';
+}
+
 </script>
 </body>
 </html>
