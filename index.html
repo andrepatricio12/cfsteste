@@ -491,79 +491,67 @@ function salvarPreferenciaRanking(mostrarRanking) {
 }
 
 async function carregarRanking() {
-    const rankingBody = document.getElementById('ranking-body');
-    rankingBody.innerHTML = ''; // Limpa o ranking existente
+        const rankingBody = document.getElementById('ranking-body');
+        rankingBody.innerHTML = '';
 
-    try {
-        const querySnapshot = await db.collection('alunos').get();
-        let rankingData = [];
+        try {
+            const querySnapshot = await db.collection('alunos').get();
+            let rankingData = [];
 
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (data.mostrarRanking) {
+                    const notas = Object.keys(data)
+                        .filter(key => !['nome', 'mostrarRanking'].includes(key))
+                        .map(key => data[key]);
 
-            // Validar campos obrigatórios
-            if (data && data.mostrarRanking && data.nome) {
-                const notas = Object.keys(data)
-                    .filter((key) => !['nome', 'mostrarRanking'].includes(key))
-                    .map((key) => data[key]);
+                    const media = notas.length > 0
+                        ? (notas.reduce((sum, nota) => sum + nota, 0) / notas.length).toFixed(3)
+                        : '0.000';
 
-                // Calcular a média com segurança
-                const media = notas.length > 0
-                    ? (notas.reduce((sum, nota) => sum + nota, 0) / notas.length).toFixed(3)
-                    : '0.000';
+                    rankingData.push({
+                        nome: data.nome,
+                        notasSalvas: notas.length,
+                        media: media
+                    });
+                }
+            });
 
-                rankingData.push({
-                    nome: data.nome,
-                    notasSalvas: notas.length,
-                    media: media
-                });
+            rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
+
+            rankingData.forEach((aluno, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}º</td>
+                    <td>${aluno.nome}</td>
+                    <td>${aluno.notasSalvas}</td>
+                    <td>${aluno.media}</td>
+                `;
+                rankingBody.appendChild(row);
+            });
+
+            if (rankingData.length === 0) {
+                rankingBody.innerHTML = '<tr><td colspan="4">Nenhum aluno no ranking.</td></tr>';
             }
-        });
-
-        // Ordenar os dados do ranking por média decrescente
-        rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
-
-        // Exibir os dados na tabela
-        rankingData.forEach((aluno, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${index + 1}º</td>
-                <td>${aluno.nome}</td>
-                <td>${aluno.notasSalvas}</td>
-                <td>${aluno.media}</td>
-            `;
-            rankingBody.appendChild(row);
-        });
-
-        if (rankingData.length === 0) {
-            rankingBody.innerHTML = '<tr><td colspan="4">Nenhum aluno no ranking.</td></tr>';
+        } catch (error) {
+            console.error('Erro ao carregar o ranking:', error);
+            alert('Não foi possível carregar o ranking.');
         }
-
-        console.log('Ranking carregado com sucesso.');
-    } catch (error) {
-        console.error('Erro ao carregar o ranking:', error);
-        alert('Ocorreu um erro ao carregar o ranking. Tente novamente mais tarde.');
     }
-}
 
-
- function mostrarRanking() {
-    const rankingContainer = document.getElementById('ranking-container');
-    rankingContainer.classList.remove('hidden');
-    rankingContainer.style.display = 'block';
-
-    carregarRanking().then(() => {
-        rankingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }).catch((error) => {
-        console.error('Erro ao mostrar o ranking:', error);
-    });
-}
-
-
-
+    function mostrarRanking() {
+        const rankingContainer = document.getElementById('ranking-container');
+        rankingContainer.classList.remove('hidden');
+        rankingContainer.style.display = 'block';
+        carregarRanking().then(() => {
+            rankingContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
 
     function ocultarRanking() {
-        document.getElementById('ranking-container').classList.add('hidden');
+        const rankingContainer = document.getElementById('ranking-container');
+        rankingContainer.classList.add('hidden');
+        rankingContainer.style.display = 'none';
     }
 </script>
 </body>
