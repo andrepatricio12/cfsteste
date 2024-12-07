@@ -225,7 +225,7 @@ body {
         <div class="message hidden" id="nota-success">Nota salva com sucesso!</div>
         <div class="error hidden" id="nota-error">A nota deve estar entre 0 e 10.</div>
 
-        <div class="message" id="media-container">Sua média é: <span id="media-value"></span></div>
+        <div class="message" id="media-container">Sua média é: <span id="media-value">0.000</span></div>
 
         <div class="button-group spacing">
             <button id="rankingButton" disabled onclick="mostrarRanking()">Ver Ranking</button>
@@ -501,20 +501,23 @@ function contarNotasValidas(notas) {
         }
     }
 
-    function calcularMedia() {
-        let soma = 0;
-        let count = 0;
+   function calcularMedia() {
+    let soma = 0;
+    let count = 0;
 
-        for (const disciplina in notasSalvas) {
-            if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
-                soma += notasSalvas[disciplina];
-                count++;
-            }
+    // Soma as notas e conta quantas há
+    for (const disciplina in notasSalvas) {
+        if (disciplina !== 'nome' && disciplina !== 'mostrarRanking') {
+            soma += notasSalvas[disciplina];
+            count++;
         }
-
-        const media = count > 0 ? (soma / count).toFixed(2) : 'N/A';
-        document.getElementById('media-value').textContent = media;
     }
+
+    // Calcula a média com 3 casas decimais
+    const media = count > 0 ? (soma / count).toFixed(3) : '0.000';
+    document.getElementById('media-value').textContent = media; // Atualiza o valor da média no HTML
+}
+
 
     function toggleRankingButton() {
     const checkbox = document.getElementById('showInRankingCheckbox');
