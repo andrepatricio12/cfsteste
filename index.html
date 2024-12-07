@@ -123,8 +123,9 @@
         </thead>
         <tbody id="ranking-body"></tbody>
     </table>
-    <button id="hide-ranking-button" onclick="ocultarRanking()">Ocultar Ranking</button>
+    <button onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
+
     </style>
     <!-- Firebase SDK (compatível com navegadores) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -202,10 +203,25 @@
 
         <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
-    <div id="ranking-list"></div>
-    <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;"></div>
+    <table id="ranking-table" class="ranking-table">
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Nome</th>
+                <th>Nº de Notas</th>
+                <th>Média</th>
+            </tr>
+        </thead>
+        <tbody id="ranking-body">
+            <!-- As linhas do ranking serão adicionadas dinamicamente aqui -->
+        </tbody>
+    </table>
+    <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;">
+        <!-- Mensagem para alunos que optaram por não aparecer no ranking -->
+    </div>
     <button onclick="ocultarRanking()">Ocultar Ranking</button>
 </div>
+
 
 
         <div id="notas-salvas">
