@@ -538,22 +538,24 @@ function salvarPreferenciaRanking(mostrarRanking) {
 
 async function carregarRanking() {
     const rankingBody = document.getElementById('ranking-body');
+    const naoExibirContainer = document.getElementById('nao-exibir-container');
     rankingBody.innerHTML = ''; // Limpa o ranking existente
+    naoExibirContainer.innerHTML = ''; // Limpa o contador existente
 
     try {
         const querySnapshot = await db.collection('alunos').get();
         let rankingData = [];
+        let naoExibirCount = 0;
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-
-            // Verifica se o aluno optou por aparecer no ranking e se tem um nome válido
+            
+            // Verifica se o aluno optou por aparecer no ranking
             if (data.mostrarRanking && data.nome) {
                 const notas = Object.keys(data)
-                    .filter((key) => key !== 'nome' && key !== 'mostrarRanking') // Filtra apenas as notas
+                    .filter((key) => !['nome', 'mostrarRanking'].includes(key))
                     .map((key) => data[key]);
 
-                // Calcula a média das notas
                 const media = notas.length > 0
                     ? (notas.reduce((sum, nota) => sum + nota, 0) / notas.length).toFixed(3)
                     : '0.000';
@@ -563,10 +565,13 @@ async function carregarRanking() {
                     notasSalvas: notas.length,
                     media: media
                 });
+            } else {
+                // Contabiliza os alunos que não optaram por aparecer no ranking
+                naoExibirCount++;
             }
         });
 
-        // Ordena os dados do ranking por média em ordem decrescente
+        // Ordena o ranking por média decrescente
         rankingData.sort((a, b) => parseFloat(b.media) - parseFloat(a.media));
 
         // Preenche a tabela com os dados do ranking
@@ -582,17 +587,21 @@ async function carregarRanking() {
                 rankingBody.appendChild(row);
             });
         } else {
-            // Exibe mensagem caso o ranking esteja vazio
             rankingBody.innerHTML = '<tr><td colspan="4">Nenhum aluno no ranking.</td></tr>';
+        }
+
+        // Atualiza o contador de alunos que não optaram por aparecer no ranking
+        if (naoExibirCount > 0) {
+            naoExibirContainer.innerHTML = `Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span>`;
+        } else {
+            naoExibirContainer.innerHTML = 'Nenhum aluno optou por não aparecer no ranking.';
         }
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
-        alert('Não foi possível carregar o ranking. Por favor, tente novamente mais tarde.');
+        alert('Ocorreu um erro ao carregar o ranking. Por favor, tente novamente mais tarde.');
     }
-    console.log("Dados obtidos do Firebase:", querySnapshot.docs.map(doc => doc.data()));
-console.log("Ranking processado:", rankingData);
-
 }
+
 
     function mostrarRanking() {
     const rankingContainer = document.getElementById('ranking-container');
