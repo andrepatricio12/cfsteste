@@ -504,57 +504,60 @@ function salvarPreferenciaRanking(mostrarRanking) {
 
 async function carregarRanking() {
     const rankingBody = document.getElementById('ranking-body'); // Corpo da tabela
-    const naoExibirContainer = document.getElementById('nao-exibir-container');
+    const naoExibirContainer = document.getElementById('nao-exibir-container'); // Contador de não exibidos
+    rankingBody.innerHTML = ''; // Limpa o ranking existente
+    naoExibirContainer.innerHTML = ''; // Limpa o contador existente
 
     try {
-        const querySnapshot = await firebase.firestore().collection('alunos').get();
+        const querySnapshot = await db.collection('alunos').get();
         let rankingData = [];
         let naoExibirCount = 0;
 
+        // Processa cada documento retornado do Firebase
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             if (data.mostrarRanking) {
-                // Calcula as notas e a média com 3 casas decimais
-                const grades = Object.keys(data)
-                    .filter(key => key !== "nome" && key !== "mostrarRanking")
-                    .map(key => data[key]);
-                const average = grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
+                const notas = Object.keys(data)
+                    .filter((key) => key !== 'nome' && key !== 'mostrarRanking') // Filtra apenas as notas
+                    .map((key) => data[key]);
+
+                const media = notas.reduce((sum, nota) => sum + nota, 0) / notas.length;
 
                 rankingData.push({
                     nome: data.nome,
-                    media: average.toFixed(3), // Média com 3 casas decimais
-                    notasSalvas: grades.length,
+                    media: media.toFixed(3), // Média com 3 casas decimais
+                    notasSalvas: notas.length,
                 });
             } else {
-                naoExibirCount++;
+                naoExibirCount++; // Contabiliza os alunos que não optaram por aparecer no ranking
             }
         });
 
-        // Ordena por média decrescente
+        // Ordena o ranking por média decrescente
         rankingData.sort((a, b) => b.media - a.media);
 
-        // Limpa o corpo da tabela
-        rankingBody.innerHTML = '';
-
-        // Preenche o ranking com as novas informações
-        rankingData.forEach((item, index) => {
+        // Preenche o corpo da tabela com os dados processados
+        rankingData.forEach((aluno, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${index + 1}º</td>
-                <td>${item.nome}</td>
-                <td>${item.notasSalvas}</td>
-                <td>${item.media}</td> <!-- Adiciona a média -->
+                <td>${aluno.nome}</td>
+                <td>${aluno.notasSalvas}</td>
+                <td>${aluno.media}</td>
             `;
             rankingBody.appendChild(row);
         });
 
+        // Atualiza o contador de alunos que não apareceram no ranking
         naoExibirContainer.innerHTML = `
             <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
         `;
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
+        alert('Ocorreu um erro ao carregar o ranking. Por favor, tente novamente mais tarde.');
     }
 }
+
 
 
   function mostrarRanking() {
