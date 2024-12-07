@@ -201,7 +201,7 @@
             <button id="rankingButton" disabled onclick="mostrarRanking()">Ver Ranking</button>
         </div>
 
-        <div id="ranking-container" class="hidden">
+        <div class="message hidden" id="ranking-container">
     <h3>Ranking de Alunos</h3>
     <div id="ranking-list"></div>
     <div id="nao-exibir-container" style="margin-top: 10px; font-size: small;"></div>
@@ -505,13 +505,6 @@ function salvarPreferenciaRanking(mostrarRanking) {
 async function carregarRanking() {
     const rankingBody = document.getElementById('ranking-body'); // Corpo da tabela
     const naoExibirContainer = document.getElementById('nao-exibir-container'); // Contador de não exibidos
-
-    // Confirma a existência do contêiner
-    if (!naoExibirContainer) {
-        console.error("Elemento 'nao-exibir-container' não encontrado no HTML.");
-        return;
-    }
-
     rankingBody.innerHTML = ''; // Limpa o ranking existente
     naoExibirContainer.innerHTML = ''; // Limpa o contador existente
 
@@ -558,10 +551,15 @@ async function carregarRanking() {
         });
 
         // Atualiza o contador de alunos que não apareceram no ranking
-        naoExibirContainer.style.display = 'block'; // Garante visibilidade
-        naoExibirContainer.innerHTML = `
-            <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
-        `;
+        if (naoExibirCount > 0) {
+            naoExibirContainer.innerHTML = `
+                <span>Alunos que optaram por não aparecer no ranking: <span style="color: red;">${naoExibirCount}</span></span>
+            `;
+        } else {
+            naoExibirContainer.innerHTML = `
+                <span>Nenhum aluno optou por não aparecer no ranking.</span>
+            `;
+        }
     } catch (error) {
         console.error('Erro ao carregar o ranking:', error);
         alert('Ocorreu um erro ao carregar o ranking. Por favor, tente novamente mais tarde.');
